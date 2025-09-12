@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>羽毛球比赛系统</title>
+    
+    <!-- LeanCloud SDK - 国内最佳实时数据库 -->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.2/dist/av-min.js"></script>
+    <!-- LeanCloud 实时通信SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-realtime@5.0.0/dist/realtime.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        input, button {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            margin: 0;
+            overflow-x: hidden;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            min-height: calc(100vh - 20px);
+            overscroll-behavior: none;
+            -webkit-overscroll-behavior: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* 页面切换 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 玩家名单 */
+        .players-list {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .players-list h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .players-names {
+            color: #495057;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 比赛预览 */
+        .rounds-preview {
+            margin: 20px 0;
+        }
+
+        .round-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .round-preview h3 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .preview-matches {
+            display: grid;
+            gap: 8px;
+        }
+
+        .preview-match {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #495057;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .preview-match:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .preview-match:active {
+            transform: scale(0.98);
+        }
+
+        .preview-match.completed {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+        }
+
+        .preview-match.completed::after {
+            content: '✅';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1rem;
+        }
+
+        .preview-match.incomplete {
+            background: #fff3cd;
+            border-color: #ffc107;
+            animation: pulse-incomplete 2s infinite;
+        }
+
+        @keyframes pulse-incomplete {
+            0% { box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2); }
+            50% { box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4); }
+            100% { box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2); }
+        }
+
+        .match-score {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #667eea;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            min-width: 60px;
+            align-self: center;
+        }
+
+        .match-score.has-score {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border-color: #28a745;
+        }
+
+        /* 控制按钮 */
+        .game-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 48px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            color: white;
+        }
+
+        .control-btn:hover, .control-btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 高级比分选择器 */
+        .advanced-score-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .advanced-score-modal.active {
+            display: flex;
+        }
+
+        .advanced-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            width: 350px;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .teams-score-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0;
+            gap: 20px;
+        }
+
+        .team-score-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .team-name-display {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .score-wheel-container {
+            position: relative;
+            height: 120px;
+            width: 80px;
+            overflow: hidden;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 2px solid #dee2e6;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .score-wheel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .score-item {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .score-item.center {
+            color: #667eea;
+            font-size: 1.6rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-item.adjacent {
+            font-size: 1rem;
+            color: #adb5bd;
+        }
+
+        .score-item.distant {
+            font-size: 0.8rem;
+            color: #ced4da;
+        }
+
+        .vs-separator {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .score-control-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-save-scores {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-save-scores:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-save-scores:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-cancel-scores {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel-scores:hover {
+            background: #5a6268;
+        }
+
+        .score-status {
+            margin: 15px 0;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .score-status.complete {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        /* 自定义弹框 */
+        .custom-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-dialog.active {
+            display: flex;
+        }
+
+        .dialog-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 340px;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            animation: dialogSlideIn 0.3s ease-out;
+        }
+
+        @keyframes dialogSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .dialog-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .dialog-icon.info {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .dialog-icon.warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .dialog-icon.success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .dialog-icon.error {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+
+        .dialog-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .dialog-message {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            white-space: pre-line;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .dialog-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .dialog-btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .dialog-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .dialog-btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .dialog-btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Loading状态 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(102, 126, 234, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .loading-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* 排名表格 */
+        .results-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .results-table h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .results-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 50px 50px 70px;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .result-row.header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            border-left: none;
+        }
+
+        .result-row.winner {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            font-weight: bold;
+            border-left-color: #ffd700;
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .result-row:not(.header):not(.winner) {
+            border-left-color: #e9ecef;
+        }
+
+        .result-row:not(.header):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .rank-cell {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .name-cell {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .score-cell {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .net-score-positive {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .net-score-negative {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .net-score-zero {
+            color: #6c757d;
+        }
+
+
+        .sync-notification {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏸 羽毛球比赛系统</h1>
+            <p>5人轮转制 - 3轮比赛，每轮5场</p>
+        </div>
+
+        <!-- 主页面 -->
+        <div id="mainPage" class="page active">
+            <div class="players-list">
+                <h4>📋 参赛人员名单</h4>
+                <div class="players-names" id="playersNames">
+                    <!-- 玩家名单将通过JavaScript生成 -->
+                </div>
+        </div>
+
+            <div class="rounds-preview">
+                <div class="round-preview">
+                    <h3>第一轮比赛</h3>
+                    <div class="preview-matches">
+                        <div class="preview-match" onclick="openMatchScore(0, 0)">
+                            <div class="match-text">比赛1</div>
+                            <span class="match-score" id="score-0-0">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(0, 1)">
+                            <div class="match-text">比赛2</div>
+                            <span class="match-score" id="score-0-1">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(0, 2)">
+                            <div class="match-text">比赛3</div>
+                            <span class="match-score" id="score-0-2">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(0, 3)">
+                            <div class="match-text">比赛4</div>
+                            <span class="match-score" id="score-0-3">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(0, 4)">
+                            <div class="match-text">比赛5</div>
+                            <span class="match-score" id="score-0-4">0 : 0</span>
+                        </div>
+                    </div>
+            </div>
+            
+                <div class="round-preview">
+                    <h3>第二轮比赛</h3>
+                    <div class="preview-matches">
+                        <div class="preview-match" onclick="openMatchScore(1, 0)">
+                            <div class="match-text">比赛1</div>
+                            <span class="match-score" id="score-1-0">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(1, 1)">
+                            <div class="match-text">比赛2</div>
+                            <span class="match-score" id="score-1-1">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(1, 2)">
+                            <div class="match-text">比赛3</div>
+                            <span class="match-score" id="score-1-2">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(1, 3)">
+                            <div class="match-text">比赛4</div>
+                            <span class="match-score" id="score-1-3">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(1, 4)">
+                            <div class="match-text">比赛5</div>
+                            <span class="match-score" id="score-1-4">0 : 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="round-preview">
+                    <h3>第三轮比赛</h3>
+                    <div class="preview-matches">
+                        <div class="preview-match" onclick="openMatchScore(2, 0)">
+                            <div class="match-text">比赛1</div>
+                            <span class="match-score" id="score-2-0">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(2, 1)">
+                            <div class="match-text">比赛2</div>
+                            <span class="match-score" id="score-2-1">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(2, 2)">
+                            <div class="match-text">比赛3</div>
+                            <span class="match-score" id="score-2-2">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(2, 3)">
+                            <div class="match-text">比赛4</div>
+                            <span class="match-score" id="score-2-3">0 : 0</span>
+                        </div>
+                        <div class="preview-match" onclick="openMatchScore(2, 4)">
+                            <div class="match-text">比赛5</div>
+                            <span class="match-score" id="score-2-4">0 : 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="game-controls">
+                <button class="control-btn btn-success" onclick="showFinalRanking()" id="showRankingBtn">
+                    📊 查看最终排名
+                </button>
+                <button class="control-btn btn-primary" onclick="regenerateMatches()">
+                    🎲 重新开始比赛
+                </button>
+            </div>
+            
+            <!-- 最终排名 -->
+            <div class="final-ranking" id="finalRanking" style="display: none;">
+                <div class="results-table">
+                    <h3>🏆 最终排名</h3>
+                    <div class="results-grid" id="resultsGrid">
+                        <!-- 结果将通过JavaScript生成 -->
+                    </div>
+                </div>
+                <button class="control-btn btn-warning" onclick="hideFinalRanking()" style="margin-top: 15px;">
+                    ❌ 关闭排名
+                </button>
+            </div>
+        </div>
+        </div>
+
+    <!-- Loading状态 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在连接云端...</div>
+        <div class="loading-subtitle">正在从LeanCloud云端加载最新比分数据<br>请稍等片刻</div>
+    </div>
+
+    <!-- 高级比分选择器模态框 -->
+    <div id="advancedScoreModal" class="advanced-score-modal">
+        <div class="advanced-modal-content">
+            <h3 id="advancedScoreTitle">记录比分</h3>
+            <div class="score-status" id="scoreStatus">请为双方队伍设置比分</div>
+            
+            <div class="teams-score-section">
+                <!-- 队伍1 -->
+                <div class="team-score-container">
+                    <div class="team-name-display" id="team1Name">队伍1</div>
+                    <div class="score-wheel-container" 
+                         ontouchstart="handleTouchStart(event, 0)" 
+                         ontouchmove="handleTouchMove(event, 0)" 
+                         ontouchend="handleTouchEnd(event, 0)"
+                         onmousedown="handleMouseDown(event, 0)"
+                         onmousemove="handleMouseMove(event, 0)"
+                         onmouseup="handleMouseUp(event, 0)">
+                        <div class="score-wheel" id="scoreWheel1">
+                            <!-- 比分轮播项将通过JavaScript生成 -->
+                        </div>
+            </div>
+        </div>
+
+                <div class="vs-separator">VS</div>
+
+                <!-- 队伍2 -->
+                <div class="team-score-container">
+                    <div class="team-name-display" id="team2Name">队伍2</div>
+                    <div class="score-wheel-container" 
+                         ontouchstart="handleTouchStart(event, 1)" 
+                         ontouchmove="handleTouchMove(event, 1)" 
+                         ontouchend="handleTouchEnd(event, 1)"
+                         onmousedown="handleMouseDown(event, 1)"
+                         onmousemove="handleMouseMove(event, 1)"
+                         onmouseup="handleMouseUp(event, 1)">
+                        <div class="score-wheel" id="scoreWheel2">
+                            <!-- 比分轮播项将通过JavaScript生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-controls">
+                <button class="score-control-btn btn-save-scores" onclick="saveMatchScores()" id="saveScoresBtn" disabled>
+                    保存比分
+                </button>
+                <button class="score-control-btn btn-cancel-scores" onclick="closeAdvancedScoreModal()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义弹框 -->
+    <div id="customDialog" class="custom-dialog">
+        <div class="dialog-content">
+            <div class="dialog-icon" id="dialogIcon">
+                <span id="dialogIconText">ℹ️</span>
+            </div>
+            <div class="dialog-title" id="dialogTitle">提示</div>
+            <div class="dialog-message" id="dialogMessage">消息内容</div>
+            <div class="dialog-buttons" id="dialogButtons">
+                <!-- 按钮将通过JavaScript生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        let selectedRound = 0;
+        let selectedMatch = 0;
+        let team1Score = 0;
+        let team2Score = 0;
+        let team1ScoreSet = false;
+        let team2ScoreSet = false;
+
+        // 触摸和拖拽状态
+        let touchStartY = 0;
+        let isDragging = false;
+
+        // 云端同步状态
+        let isConnected = false;
+        let saveToSync = null;
+
+        // 生成用户ID
+        window.currentUserId = 'user-' + Math.random().toString(36).substr(2, 6);
+        window.lastActionType = 'init';
+
+        // 玩家配置
+        const playerConfig = [
+            { name: '雷锋', avatar: '雷', id: 1 },
+            { name: '魔', avatar: '魔', id: 2 },
+            { name: '陈强', avatar: '强', id: 3 },
+            { name: '何山水', avatar: '何', id: 4 },
+            { name: '大苹果', avatar: '果', id: 5 }
+        ];
+
+        // 比赛安排
+        let matchSchedule = [];
+
+        // 生成随机比赛安排
+        function generateRandomMatches() {
+            matchSchedule = [];
+            const players = playerConfig.map(p => p.name);
+            
+            const matchTemplates = [
+                [
+                    { team1: [0, 1], team2: [2, 3] },
+                    { team1: [0, 2], team2: [1, 4] },
+                    { team1: [0, 3], team2: [2, 4] },
+                    { team1: [0, 4], team2: [1, 3] },
+                    { team1: [1, 2], team2: [3, 4] }
+                ],
+                [
+                    { team1: [1, 3], team2: [0, 4] },
+                    { team1: [1, 4], team2: [0, 2] },
+                    { team1: [2, 3], team2: [0, 1] },
+                    { team1: [2, 4], team2: [1, 3] },
+                    { team1: [0, 3], team2: [1, 2] }
+                ],
+                [
+                    { team1: [0, 2], team2: [3, 4] },
+                    { team1: [1, 4], team2: [2, 3] },
+                    { team1: [0, 1], team2: [2, 4] },
+                    { team1: [1, 3], team2: [0, 4] },
+                    { team1: [0, 3], team2: [1, 4] }
+                ]
+            ];
+            
+            for (let round = 0; round < 3; round++) {
+                const roundMatches = [];
+                const template = [...matchTemplates[round]];
+                template.sort(() => Math.random() - 0.5);
+                
+                template.forEach(match => {
+                    const team1 = [players[match.team1[0]], players[match.team1[1]]];
+                    const team2 = [players[match.team2[0]], players[match.team2[1]]];
+                    
+                    if (Math.random() > 0.5) team1.reverse();
+                    if (Math.random() > 0.5) team2.reverse();
+                    
+                    roundMatches.push({
+                        team1: team1,
+                        team2: team2,
+                        score1: 0,
+                        score2: 0
+                    });
+                });
+                
+                matchSchedule.push(roundMatches);
+            }
+        }
+
+        // 更新玩家显示
+        function updatePlayersDisplay() {
+            const playersContainer = document.getElementById('playersNames');
+            const playerNames = playerConfig.map(player => player.name);
+            playersContainer.textContent = playerNames.join(' • ');
+        }
+
+        // 更新比赛显示
+        function updateMatchDisplay() {
+            for (let round = 0; round < 3; round++) {
+                for (let match = 0; match < 5; match++) {
+                    const scoreElement = document.getElementById(`score-${round}-${match}`);
+                    const matchElement = scoreElement ? scoreElement.closest('.preview-match') : null;
+                    const matchData = matchSchedule[round] && matchSchedule[round][match];
+                    
+                    if (scoreElement && matchData && matchElement) {
+                        const score1 = matchData.score1;
+                        const score2 = matchData.score2;
+                        scoreElement.textContent = `${score1} : ${score2}`;
+                        
+                        if (score1 > 0 || score2 > 0) {
+                            scoreElement.classList.add('has-score');
+                            matchElement.classList.add('completed');
+                            matchElement.classList.remove('incomplete');
+                } else {
+                            scoreElement.classList.remove('has-score');
+                            matchElement.classList.remove('completed');
+                        }
+                    }
+                }
+            }
+            
+            updateMatchTexts();
+        }
+
+        // 更新比赛文本
+        function updateMatchTexts() {
+            const matchTexts = document.querySelectorAll('.preview-match .match-text');
+            matchTexts.forEach((textElement, index) => {
+                const round = Math.floor(index / 5);
+                const match = index % 5;
+                const matchData = matchSchedule[round] && matchSchedule[round][match];
+                
+                if (matchData) {
+                    textElement.textContent = `${matchData.team1.join(' + ')} VS ${matchData.team2.join(' + ')}`;
+                }
+            });
+        }
+
+        // LeanCloud实时同步（国内最佳方案）
+        function initSimpleJsonSync() {
+            // LeanCloud配置（演示配置，您可以创建自己的）
+            const leancloudConfig = {
+                appId: 'sHFMtBnumqNruNtqiQFGNuah-gzGzoHsz',
+                appKey: 'OQLGQDKCo48oayq0OAnd8g5K',
+                serverURL: 'https://shfmtbnu.lc-cn-n1-shared.com'
+            };
+            
+            let lastSyncTime = 0;
+            let gameClass = null;
+            
+            // 初始化LeanCloud
+            async function init() {
+                try {
+                    showLoading('正在连接云端...', '连接LeanCloud实时数据库');
+                    
+                    // 初始化LeanCloud
+                    AV.init(leancloudConfig);
+                    
+                    // 创建数据类
+                    gameClass = AV.Object.extend('BadmintonGame');
+                    
+                    // 从云端加载数据
+                    await loadFromCloud();
+                    
+                    // 设置实时监听
+                    setupRealtimeListener();
+                    
+                    isConnected = true;
+                    hideLoading();
+                    showSyncNotification('🎉 LeanCloud连接成功！实时同步已开启');
+                    
+                } catch (error) {
+                    console.error('LeanCloud连接失败:', error);
+                    isConnected = false;
+                    hideLoading();
+                    
+                    // 使用演示模式
+                    initDemoMode();
+                    
+                    showSyncNotification('⚠️ LeanCloud连接失败，使用演示模式（数据仅本地保存）');
+                }
+            }
+            
+            // 演示模式（模拟实时同步）
+            function initDemoMode() {
+                generateRandomMatches();
+                updatePlayersDisplay();
+                updateMatchDisplay();
+                
+                // 模拟实时同步的本地版本
+                let syncData = {
+                    matchSchedule: matchSchedule,
+                    timestamp: Date.now(),
+                    lastUpdatedBy: window.currentUserId
+                };
+                
+                // 保存函数
+                saveToSync = function() {
+                    syncData = {
+                        matchSchedule: matchSchedule,
+                        finalRankingVisible: document.getElementById('finalRanking').style.display !== 'none',
+                        timestamp: Date.now(),
+                        lastUpdatedBy: window.currentUserId,
+                        actionType: window.lastActionType
+                    };
+                    
+                    // 保存到localStorage
+                    localStorage.setItem('badminton-realtime-demo', JSON.stringify(syncData));
+                    
+                    showSyncNotification('📊 比分已更新（演示模式）');
+                    
+                    // 模拟其他用户的更新通知
+                    setTimeout(() => {
+                        const actions = {
+                            'score_update': '📊 模拟：其他人看到了比分更新',
+                            'regenerate_matches': '🎲 模拟：其他人看到了重新开始',
+                            'show_ranking': '🏆 模拟：其他人看到了排名'
+                        };
+                        showSyncNotification(actions[window.lastActionType] || '📊 模拟同步完成');
+                    }, 2000);
+                };
+                
+                // 检查本地数据
+                try {
+                    const stored = localStorage.getItem('badminton-realtime-demo');
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        if (data.matchSchedule) {
+                            matchSchedule = data.matchSchedule;
+                            updateMatchDisplay();
+                            
+                            if (data.finalRankingVisible) {
+                                document.getElementById('finalRanking').style.display = 'block';
+                            }
+                            
+                            showSyncNotification('📊 加载了之前的比赛数据');
+                        }
+                    }
+                } catch (e) {
+                    console.log('数据加载失败');
+                }
+            }
+            
+            // 保存到LeanCloud（更新现有记录）
+            async function save() {
+                if (!gameClass) {
+                    console.log('LeanCloud未初始化，使用演示模式');
+                return;
+            }
+
+                try {
+                    showLoading('正在同步...', '保存比分到云端数据库');
+                    
+                    const gameData = {
+                        matchSchedule: matchSchedule,
+                        finalRankingVisible: document.getElementById('finalRanking').style.display !== 'none',
+                        timestamp: Date.now(),
+                        lastUpdatedBy: window.currentUserId,
+                        actionType: window.lastActionType || 'score_update'
+                    };
+                    
+                    // 先查找现有记录
+                    const query = new AV.Query(gameClass);
+                    query.equalTo('gameId', 'current_game');
+                    const results = await query.find();
+                    
+                    let gameObject;
+                    if (results.length > 0) {
+                        // 更新现有记录
+                        gameObject = results[0];
+                    } else {
+                        // 创建新记录
+                        gameObject = new gameClass();
+                        gameObject.set('gameId', 'current_game');
+                    }
+                    
+                    gameObject.set('data', gameData);
+                    await gameObject.save();
+                    
+                    lastSyncTime = gameData.timestamp;
+                    hideLoading();
+                    showSyncNotification('☁️ 比分已实时同步');
+                    
+                } catch (error) {
+                    console.error('LeanCloud保存失败:', error);
+                    hideLoading();
+                    showSyncNotification('❌ 保存失败，请检查网络');
+                }
+            }
+            
+            // 从LeanCloud加载数据
+            async function loadFromCloud() {
+                if (!gameClass) return;
+                
+                try {
+                    showLoading('正在加载数据...', '从云端获取最新比分数据');
+                    
+                    const query = new AV.Query(gameClass);
+                    query.equalTo('gameId', 'current_game');
+                    query.descending('updatedAt');
+                    query.limit(1);
+                    
+                    const results = await query.find();
+                    
+                    if (results.length > 0) {
+                        const gameData = results[0].get('data');
+                        
+                        if (gameData && gameData.matchSchedule) {
+                            matchSchedule = gameData.matchSchedule;
+                            lastSyncTime = gameData.timestamp || 0;
+                            updateMatchDisplay();
+                            
+                            if (gameData.finalRankingVisible) {
+                                document.getElementById('finalRanking').style.display = 'block';
+                            }
+                            
+                            hideLoading();
+                            showSyncNotification('📊 云端数据加载完成');
+                        } else {
+                            hideLoading();
+                            generateRandomMatches();
+                            updateMatchDisplay();
+                            showSyncNotification('🎲 生成了新的比赛安排');
+                        }
+                    } else {
+                        // 云端没有数据，生成新比赛
+                        hideLoading();
+                        generateRandomMatches();
+                        updateMatchDisplay();
+                        showSyncNotification('🎲 生成了新的比赛安排');
+                    }
+                    
+                } catch (error) {
+                    console.error('LeanCloud加载失败:', error);
+                    hideLoading();
+                    generateRandomMatches();
+                    updateMatchDisplay();
+                    showSyncNotification('⚠️ 加载失败，生成新比赛');
+                }
+            }
+            
+            // 设置实时监听（使用轮询确保可靠性）
+            function setupRealtimeListener() {
+                if (!gameClass) return;
+                
+                // 每10秒检查云端更新（降低频率避免超过LeanCloud限制）
+                setInterval(async () => {
+                    try {
+                        const query = new AV.Query(gameClass);
+                        query.equalTo('gameId', 'current_game');
+                        query.descending('updatedAt');
+                        query.limit(1);
+                        
+                        const results = await query.find();
+                        
+                        if (results.length > 0) {
+                            const gameData = results[0].get('data');
+                            
+                            // 检查是否有新数据
+                            if (gameData && gameData.timestamp > lastSyncTime && 
+                                gameData.lastUpdatedBy !== window.currentUserId) {
+                                
+                                lastSyncTime = gameData.timestamp;
+                                
+                                // 更新比赛数据
+                                matchSchedule = gameData.matchSchedule;
+                                updateMatchDisplay();
+                                
+                                // 更新排名显示状态
+                                if (gameData.finalRankingVisible) {
+                                    document.getElementById('finalRanking').style.display = 'block';
+                                } else {
+                                    document.getElementById('finalRanking').style.display = 'none';
+                                }
+                                
+                                // 显示实时更新提示 - 更明显的通知
+                                const actions = {
+                                    'score_update': '🔥 有人修改了比分！',
+                                    'regenerate_matches': '🎲 有人重新开始了比赛',
+                                    'show_ranking': '🏆 有人查看了排名',
+                                    'hide_ranking': '❌ 有人关闭了排名'
+                                };
+                                
+                                const notificationMessage = actions[gameData.actionType] || '📊 实时数据更新';
+                                showSyncNotification(notificationMessage);
+                                
+                                // 如果是比分更新，显示更明显的提示
+                                if (gameData.actionType === 'score_update') {
+                                    showAlert('🔥 有人修改了比分！\n\n页面数据已自动更新', '比分更新提醒', 'info');
+                                }
+                            }
+                        }
+                        
+                    } catch (error) {
+                        console.log('实时检查失败:', error);
+                    }
+                }, 10000); // 每10秒检查一次，降低频率避免超过使用限制
+                
+                showSyncNotification('🔥 实时监听已开启（10秒检查）');
+            }
+            
+            
+            init();
+            return save;
+        }
+
+        // 打开比分选择器
+        function openMatchScore(round, match) {
+            selectedRound = round;
+            selectedMatch = match;
+            
+            const matchData = matchSchedule[round] && matchSchedule[round][match];
+            if (!matchData) return;
+
+            team1Score = matchData.score1;
+            team2Score = matchData.score2;
+            team1ScoreSet = matchData.score1 > 0;
+            team2ScoreSet = matchData.score2 > 0;
+
+            document.getElementById('advancedScoreTitle').textContent = `第${round + 1}轮第${match + 1}场比赛`;
+            document.getElementById('team1Name').textContent = matchData.team1.join(' + ');
+            document.getElementById('team2Name').textContent = matchData.team2.join(' + ');
+
+            createScoreWheel('scoreWheel1', team1Score);
+            createScoreWheel('scoreWheel2', team2Score);
+            updateScoreStatus();
+
+            document.getElementById('advancedScoreModal').classList.add('active');
+        }
+
+        // 创建比分轮播
+        function createScoreWheel(wheelId, currentScore) {
+            const wheel = document.getElementById(wheelId);
+            wheel.innerHTML = '';
+
+            for (let i = 0; i <= 30; i++) {
+                const scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item';
+                scoreItem.textContent = i;
+                scoreItem.onclick = () => selectWheelScore(wheelId, i);
+                wheel.appendChild(scoreItem);
+            }
+
+            setWheelPosition(wheelId, currentScore);
+        }
+
+        // 设置轮播位置
+        function setWheelPosition(wheelId, score) {
+            const wheel = document.getElementById(wheelId);
+            const items = wheel.children;
+            
+            const offset = -score * 40 + 40;
+            wheel.style.transform = `translateY(${offset}px)`;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const distance = Math.abs(i - score);
+                
+                item.classList.remove('center', 'adjacent', 'distant');
+                
+                if (distance === 0) {
+                    item.classList.add('center');
+                } else if (distance === 1) {
+                    item.classList.add('adjacent');
+                } else {
+                    item.classList.add('distant');
+                }
+            }
+        }
+
+        // 选择分数
+        function selectWheelScore(wheelId, score) {
+            if (wheelId === 'scoreWheel1') {
+                team1Score = score;
+                team1ScoreSet = true;
+            } else {
+                team2Score = score;
+                team2ScoreSet = true;
+            }
+
+            setWheelPosition(wheelId, score);
+            updateScoreStatus();
+        }
+
+        // 触摸处理
+        function handleTouchStart(event, teamIndex) {
+            event.preventDefault();
+            touchStartY = event.touches[0].clientY;
+            isDragging = true;
+        }
+
+        function handleTouchMove(event, teamIndex) {
+            if (!isDragging) return;
+            event.preventDefault();
+            
+            const currentY = event.touches[0].clientY;
+            const deltaY = touchStartY - currentY;
+            const sensitivity = 40;
+            
+            const scoreChange = Math.round(deltaY / sensitivity);
+            if (Math.abs(scoreChange) >= 1) {
+                const currentScore = teamIndex === 0 ? team1Score : team2Score;
+                const newScore = Math.max(0, Math.min(30, currentScore + scoreChange));
+                
+                selectWheelScore(teamIndex === 0 ? 'scoreWheel1' : 'scoreWheel2', newScore);
+                touchStartY = currentY;
+            }
+        }
+
+        function handleTouchEnd(event, teamIndex) {
+            isDragging = false;
+        }
+
+        function handleMouseDown(event, teamIndex) {
+            event.preventDefault();
+            touchStartY = event.clientY;
+            isDragging = true;
+        }
+
+        function handleMouseMove(event, teamIndex) {
+            if (!isDragging) return;
+            event.preventDefault();
+            
+            const currentY = event.clientY;
+            const deltaY = touchStartY - currentY;
+            const sensitivity = 40;
+            
+            const scoreChange = Math.round(deltaY / sensitivity);
+            if (Math.abs(scoreChange) >= 1) {
+                const currentScore = teamIndex === 0 ? team1Score : team2Score;
+                const newScore = Math.max(0, Math.min(30, currentScore + scoreChange));
+                
+                selectWheelScore(teamIndex === 0 ? 'scoreWheel1' : 'scoreWheel2', newScore);
+                touchStartY = currentY;
+            }
+        }
+
+        function handleMouseUp(event, teamIndex) {
+            isDragging = false;
+        }
+
+        // 更新比分状态
+        function updateScoreStatus() {
+            const statusElement = document.getElementById('scoreStatus');
+            const saveBtn = document.getElementById('saveScoresBtn');
+
+            if (team1ScoreSet && team2ScoreSet) {
+                statusElement.textContent = `比分设置完成：${team1Score} : ${team2Score}`;
+                statusElement.className = 'score-status complete';
+                saveBtn.disabled = false;
+            } else if (team1ScoreSet) {
+                statusElement.textContent = `左侧已设置：${team1Score}分，请设置右侧比分`;
+                statusElement.className = 'score-status';
+                saveBtn.disabled = true;
+            } else if (team2ScoreSet) {
+                statusElement.textContent = `右侧已设置：${team2Score}分，请设置左侧比分`;
+                statusElement.className = 'score-status';
+                saveBtn.disabled = true;
+            } else {
+                statusElement.textContent = '请滑动或点击数字设置双方比分（0-30分）';
+                statusElement.className = 'score-status';
+                saveBtn.disabled = true;
+            }
+        }
+
+        // 保存比分
+        function saveMatchScores() {
+            if (!team1ScoreSet || !team2ScoreSet) {
+                showAlert('请为双方队伍都设置比分！', '⚠️ 设置不完整', 'warning');
+                return;
+            }
+
+            const matchData = matchSchedule[selectedRound][selectedMatch];
+            matchData.score1 = team1Score;
+            matchData.score2 = team2Score;
+
+            updateMatchDisplay();
+            closeAdvancedScoreModal();
+            
+            window.lastActionType = 'score_update';
+            if (saveToSync) saveToSync();
+            
+            showAlert(`比分已保存：${team1Score} : ${team2Score}`, '✅ 保存成功', 'success');
+        }
+
+        // 关闭比分选择器
+        function closeAdvancedScoreModal() {
+            document.getElementById('advancedScoreModal').classList.remove('active');
+            team1ScoreSet = false;
+            team2ScoreSet = false;
+        }
+
+        // 重新开始比赛
+        function regenerateMatches() {
+            showConfirm(
+                '确定要重新开始比赛吗？\n这将重新随机安排队友并清除所有比分。',
+                '🎲 重新开始比赛',
+                () => {
+                    generateRandomMatches();
+                    updatePlayersDisplay();
+                    updateMatchDisplay();
+                    hideFinalRanking();
+                    
+                    window.lastActionType = 'regenerate_matches';
+                    if (saveToSync) saveToSync();
+                    
+                    showAlert('🎉 比赛已重新安排！', '安排完成', 'success');
+                }
+            );
+        }
+
+        // 显示排名
+        function showFinalRanking() {
+            const incompleteMatches = [];
+            
+            for (let round = 0; round < 3; round++) {
+                for (let match = 0; match < 5; match++) {
+                    const matchData = matchSchedule[round] && matchSchedule[round][match];
+                    if (matchData && matchData.score1 === 0 && matchData.score2 === 0) {
+                        const matchElement = document.getElementById(`score-${round}-${match}`)?.closest('.preview-match');
+                        incompleteMatches.push({
+                            element: matchElement,
+                            round: round,
+                            match: match
+                        });
+                    }
+                }
+            }
+
+            if (incompleteMatches.length > 0) {
+                // 滚动到第一个未计分的比赛
+                const firstIncompleteMatch = incompleteMatches[0];
+                if (firstIncompleteMatch.element) {
+                    // 添加高亮效果
+                    firstIncompleteMatch.element.classList.add('incomplete');
+                    
+                    // 平滑滚动到该比赛
+                    firstIncompleteMatch.element.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // 3秒后移除高亮效果
+                    setTimeout(() => {
+                        firstIncompleteMatch.element.classList.remove('incomplete');
+                    }, 3000);
+                }
+                
+                showAlert(
+                    `还有 ${incompleteMatches.length} 场比赛未记录比分！\n\n已自动滚动到第一个未计分的比赛（第${firstIncompleteMatch.round + 1}轮第${firstIncompleteMatch.match + 1}场）\n\n请完成所有比赛后再查看排名。`,
+                    '⚠️ 比赛未完成',
+                    'warning'
+                );
+                return;
+            }
+
+            calculateAndDisplayResults();
+            document.getElementById('finalRanking').style.display = 'block';
+            
+            window.lastActionType = 'show_ranking';
+            if (saveToSync) saveToSync();
+        }
+
+        // 隐藏排名
+        function hideFinalRanking() {
+            document.getElementById('finalRanking').style.display = 'none';
+            window.lastActionType = 'hide_ranking';
+            if (saveToSync) saveToSync();
+        }
+
+        // 计算排名
+        function calculateAndDisplayResults() {
+            const playerStats = {};
+            playerConfig.forEach(player => {
+                playerStats[player.name] = {
+                    wins: 0,
+                    losses: 0,
+                    totalScore: 0,
+                    totalOpponentScore: 0
+                };
+            });
+
+            matchSchedule.forEach(round => {
+                round.forEach(match => {
+                    if (match.score1 > 0 || match.score2 > 0) {
+                        match.team1.forEach(player => {
+                            playerStats[player].totalScore += match.score1;
+                            playerStats[player].totalOpponentScore += match.score2;
+                            if (match.score1 > match.score2) {
+                                playerStats[player].wins += 1;
+                            } else if (match.score1 < match.score2) {
+                                playerStats[player].losses += 1;
+                            }
+                        });
+
+                        match.team2.forEach(player => {
+                            playerStats[player].totalScore += match.score2;
+                            playerStats[player].totalOpponentScore += match.score1;
+                            if (match.score2 > match.score1) {
+                                playerStats[player].wins += 1;
+                            } else if (match.score2 < match.score1) {
+                                playerStats[player].losses += 1;
+                            }
+                        });
+                    }
+                });
+            });
+
+            const sortedPlayers = Object.entries(playerStats).sort((a, b) => {
+                if (b[1].wins !== a[1].wins) return b[1].wins - a[1].wins;
+                return (b[1].totalScore - b[1].totalOpponentScore) - (a[1].totalScore - a[1].totalOpponentScore);
+            });
+
+            const resultsGrid = document.getElementById('resultsGrid');
+            resultsGrid.innerHTML = `
+                <div class="result-row header">
+                    <div class="rank-cell">排名</div>
+                    <div class="name-cell">姓名</div>
+                    <div class="score-cell">胜场</div>
+                    <div class="score-cell">负场</div>
+                    <div class="score-cell">净胜分</div>
+                </div>
+            `;
+
+            sortedPlayers.forEach(([player, stats], index) => {
+                const row = document.createElement('div');
+                row.className = `result-row ${index === 0 ? 'winner' : ''}`;
+                
+                const netScore = stats.totalScore - stats.totalOpponentScore;
+                const netScoreClass = netScore > 0 ? 'net-score-positive' : 
+                                   netScore < 0 ? 'net-score-negative' : 'net-score-zero';
+                
+                row.innerHTML = `
+                    <div class="rank-cell">${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}</div>
+                    <div class="name-cell">${player}</div>
+                    <div class="score-cell">${stats.wins}</div>
+                    <div class="score-cell">${stats.losses}</div>
+                    <div class="score-cell ${netScoreClass}">${netScore > 0 ? '+' : ''}${netScore}</div>
+                `;
+                resultsGrid.appendChild(row);
+            });
+        }
+
+        // 弹框函数
+        function showDialog(options) {
+            const dialog = document.getElementById('customDialog');
+            const icon = document.getElementById('dialogIcon');
+            const iconText = document.getElementById('dialogIconText');
+            const title = document.getElementById('dialogTitle');
+            const message = document.getElementById('dialogMessage');
+            const buttons = document.getElementById('dialogButtons');
+
+            const iconMap = {
+                info: { text: 'ℹ️', class: 'info' },
+                warning: { text: '⚠️', class: 'warning' },
+                success: { text: '✅', class: 'success' },
+                error: { text: '❌', class: 'error' },
+                question: { text: '❓', class: 'info' }
+            };
+
+            const iconConfig = iconMap[options.type] || iconMap.info;
+            iconText.textContent = iconConfig.text;
+            icon.className = `dialog-icon ${iconConfig.class}`;
+
+            title.textContent = options.title || '提示';
+            message.textContent = options.message || '';
+
+            buttons.innerHTML = '';
+            if (options.buttons && options.buttons.length > 0) {
+                options.buttons.forEach(btn => {
+                    const button = document.createElement('button');
+                    button.className = `dialog-btn ${btn.class || 'dialog-btn-secondary'}`;
+                    button.textContent = btn.text;
+                    button.onclick = () => {
+                        closeDialog();
+                        if (btn.onClick) btn.onClick();
+                    };
+                    buttons.appendChild(button);
+                });
+            } else {
+                const okButton = document.createElement('button');
+                okButton.className = 'dialog-btn dialog-btn-primary';
+                okButton.textContent = '确定';
+                okButton.onclick = () => {
+                    closeDialog();
+                    if (options.onOk) options.onOk();
+                };
+                buttons.appendChild(okButton);
+            }
+
+            dialog.classList.add('active');
+        }
+
+        function closeDialog() {
+            document.getElementById('customDialog').classList.remove('active');
+        }
+
+        function showAlert(message, title = '提示', type = 'info', onOk = null) {
+            showDialog({
+                type: type,
+                title: title,
+                message: message,
+                onOk: onOk
+            });
+        }
+
+        function showConfirm(message, title = '确认', onConfirm = null, onCancel = null) {
+            showDialog({
+                type: 'question',
+                title: title,
+                message: message,
+                buttons: [
+                    {
+                        text: '取消',
+                        class: 'dialog-btn-secondary',
+                        onClick: onCancel
+                    },
+                    {
+                        text: '确定',
+                        class: 'dialog-btn-primary',
+                        onClick: onConfirm
+                    }
+                ]
+            });
+        }
+
+        // Loading函数
+        function showLoading(text = '正在连接云端...', subtitle = '正在从LeanCloud云端加载最新数据') {
+            const overlay = document.getElementById('loadingOverlay');
+            const textEl = overlay.querySelector('.loading-text');
+            const subtitleEl = overlay.querySelector('.loading-subtitle');
+            
+            textEl.textContent = text;
+            subtitleEl.innerHTML = subtitle;
+            overlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // 同步通知
+        function showSyncNotification(message, type = 'success') {
+            let notification = document.getElementById('syncNotification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'syncNotification';
+                notification.className = 'sync-notification';
+                document.body.appendChild(notification);
+            }
+            
+            // 根据类型设置不同的背景颜色
+            if (type === 'warning' || message.includes('失败') || message.includes('演示模式')) {
+                notification.style.background = 'linear-gradient(45deg, #ffc107, #fd7e14)';
+            } else {
+                notification.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+            }
+            
+            notification.textContent = message;
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(-50%) translateY(0)';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(-20px)';
+            }, 4000); // 延长到4秒，让用户有足够时间看到
+        }
+
+
+        // 防止下拉刷新
+        function preventPullToRefresh() {
+            let startY = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            }, { passive: false });
+            
+            document.addEventListener('touchmove', function(e) {
+                const currentY = e.touches[0].clientY;
+                const deltaY = currentY - startY;
+                
+                if (window.scrollY === 0 && deltaY > 0) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            document.body.style.overscrollBehavior = 'none';
+            document.documentElement.style.overscrollBehavior = 'none';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePlayersDisplay();
+            saveToSync = initSimpleJsonSync();
+            preventPullToRefresh();
+        });
+
+        // 事件监听
+        document.getElementById('advancedScoreModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAdvancedScoreModal();
+        });
+
+        document.getElementById('customDialog').addEventListener('click', function(e) {
+            if (e.target === this) closeDialog();
+        });
+
+    </script>
+</body>
+</html>
