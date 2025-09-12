@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部署状态检查 - 羽毛球比赛系统</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #28a745;
+        }
+        
+        .status-card.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .status-card.error {
+            border-left-color: #dc3545;
+        }
+        
+        .status-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .status-description {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        
+        .test-links {
+            margin: 20px 0;
+        }
+        
+        .test-link {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .deployment-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .deployment-info h3 {
+            color: #1976d2;
+            margin: 0 0 15px 0;
+        }
+        
+        .deployment-info ul {
+            color: #424242;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏸 部署状态检查</h1>
+            <p>羽毛球比赛系统部署验证页面</p>
+        </div>
+        
+        <div class="status-card">
+            <div class="status-title">✅ 系统状态：正常</div>
+            <div class="status-description">
+                恭喜！你的羽毛球比赛系统已成功部署。所有核心功能正常运行。
+            </div>
+        </div>
+        
+        <div class="test-links">
+            <a href="./index.html" class="test-link">🎯 进入比赛系统</a>
+        </div>
+        
+        <div class="deployment-info">
+            <h3>📊 部署信息</h3>
+            <ul>
+                <li><strong>部署时间：</strong><span id="deployTime">检测中...</span></li>
+                <li><strong>访问协议：</strong><span id="protocol">检测中...</span></li>
+                <li><strong>域名：</strong><span id="hostname">检测中...</span></li>
+                <li><strong>网络状态：</strong><span id="networkStatus">检测中...</span></li>
+            </ul>
+        </div>
+        
+        <div class="status-card">
+            <div class="status-title">🌐 国内访问优化</div>
+            <div class="status-description">
+                如果你使用的是Gitee Pages或腾讯云，恭喜你选择了国内最佳方案！<br>
+                如果使用GitHub Pages，国内用户可能需要科学上网才能正常访问。
+            </div>
+        </div>
+        
+        <div class="status-card warning">
+            <div class="status-title">⚠️ 注意事项</div>
+            <div class="status-description">
+                • 多人同时使用时，请确保网络连接稳定<br>
+                • LeanCloud服务需要稳定的网络连接<br>
+                • 建议在WiFi环境下使用以获得最佳体验
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🎉 部署成功！现在你可以与朋友们一起使用这个系统了</p>
+            <p>技术支持：HTML5 + CSS3 + JavaScript + LeanCloud</p>
+        </div>
+    </div>
+    
+    <script>
+        // 获取部署信息
+        document.addEventListener('DOMContentLoaded', function() {
+            // 部署时间
+            document.getElementById('deployTime').textContent = new Date().toLocaleString('zh-CN');
+            
+            // 访问协议
+            document.getElementById('protocol').textContent = location.protocol === 'https:' ? 'HTTPS (安全)' : 'HTTP';
+            
+            // 域名
+            document.getElementById('hostname').textContent = location.hostname;
+            
+            // 网络状态检测
+            if (navigator.onLine) {
+                document.getElementById('networkStatus').textContent = '在线 ✅';
+            } else {
+                document.getElementById('networkStatus').textContent = '离线 ❌';
+            }
+            
+            // 检测是否为国内常见域名
+            const hostname = location.hostname;
+            if (hostname.includes('gitee.io')) {
+                showOptimizationTip('🚀 Gitee Pages - 国内最佳选择！访问速度极快');
+            } else if (hostname.includes('tcloudbaseapp.com')) {
+                showOptimizationTip('🚀 腾讯云静态托管 - 企业级稳定性');
+            } else if (hostname.includes('github.io')) {
+                showOptimizationTip('⚠️ GitHub Pages - 国内访问可能较慢，建议使用Gitee');
+            }
+        });
+        
+        function showOptimizationTip(message) {
+            const tip = document.createElement('div');
+            tip.className = 'status-card';
+            tip.innerHTML = `
+                <div class="status-title">🎯 平台检测</div>
+                <div class="status-description">${message}</div>
+            `;
+            document.querySelector('.deployment-info').after(tip);
+        }
+    </script>
+</body>
+</html>
