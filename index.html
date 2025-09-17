@@ -1641,6 +1641,14 @@
                 const playerMatchCount = Array(playerCount).fill(0);
                 const usedCombinations = new Set();
                 
+                // 重置搭配计数器（6人/通用模式）
+                window.partnershipCount6 = {};
+                for (let i = 0; i < playerCount; i++) {
+                    for (let j = i + 1; j < playerCount; j++) {
+                        window.partnershipCount6[`${i}-${j}`] = 0;
+                    }
+                }
+                
                 let success = true;
                 
                 for (let matchIndex = 0; matchIndex < targetMatches; matchIndex++) {
@@ -1698,34 +1706,47 @@
                             score += Math.min(restTime * 100, 500);
                         }
                         
-                        // 新增：队友搭配平衡性检查
-                        let partnershipPenalty = 0;
+                        // 新增：智能搭配均衡系统（6人/通用模式）
+                        let partnershipScore = 0;
                         const team1Players = combo.team1;
                         const team2Players = combo.team2;
                         
-                        // 检查已有比赛中这些搭配出现的频率
-                        for (let i = 0; i < matchIndex; i++) {
-                            const previousMatch = matches[i];
-                            if (previousMatch) {
-                                // 检查队伍1的搭配是否重复
-                                const prevTeam1Ids = previousMatch.team1.map(name => 
-                                    players.findIndex(p => p === name));
-                                const prevTeam2Ids = previousMatch.team2.map(name => 
-                                    players.findIndex(p => p === name));
-                                
-                                // 如果当前组合的队伍搭配与之前的完全相同，给予重度惩罚
-                                if ((team1Players[0] === prevTeam1Ids[0] && team1Players[1] === prevTeam1Ids[1]) ||
-                                    (team1Players[0] === prevTeam1Ids[1] && team1Players[1] === prevTeam1Ids[0])) {
-                                    partnershipPenalty += 2000; // 重度惩罚重复搭配
-                                }
-                                if ((team2Players[0] === prevTeam2Ids[0] && team2Players[1] === prevTeam2Ids[1]) ||
-                                    (team2Players[0] === prevTeam2Ids[1] && team2Players[1] === prevTeam2Ids[0])) {
-                                    partnershipPenalty += 2000; // 重度惩罚重复搭配
+                        // 初始化搭配计数器（6人模式）
+                        if (!window.partnershipCount6) {
+                            window.partnershipCount6 = {};
+                            for (let i = 0; i < playerCount; i++) {
+                                for (let j = i + 1; j < playerCount; j++) {
+                                    window.partnershipCount6[`${i}-${j}`] = 0;
                                 }
                             }
                         }
                         
-                        score -= partnershipPenalty; // 减去搭配重复的惩罚分
+                        // 计算当前搭配的出现次数
+                        const team1Key = `${Math.min(team1Players[0], team1Players[1])}-${Math.max(team1Players[0], team1Players[1])}`;
+                        const team2Key = `${Math.min(team2Players[0], team2Players[1])}-${Math.max(team2Players[0], team2Players[1])}`;
+                        
+                        const team1Count = window.partnershipCount6[team1Key] || 0;
+                        const team2Count = window.partnershipCount6[team2Key] || 0;
+                        
+                        // 6人模式每对搭配理想出现次数为2次，其他模式根据玩家数调整
+                        const idealCount = playerCount === 6 ? 2 : Math.ceil(targetPerPlayer / (playerCount - 1));
+                        
+                        // 优先选择搭配次数少的组合
+                        const team1Priority = idealCount - team1Count;
+                        const team2Priority = idealCount - team2Count;
+                        
+                        partnershipScore += team1Priority * 1500;
+                        partnershipScore += team2Priority * 1500;
+                        
+                        // 额外奖励从未搭配过的组合
+                        if (team1Count === 0) partnershipScore += 3000;
+                        if (team2Count === 0) partnershipScore += 3000;
+                        
+                        // 惩罚过度搭配的组合
+                        if (team1Count >= idealCount) partnershipScore -= (team1Count - idealCount + 1) * 3000;
+                        if (team2Count >= idealCount) partnershipScore -= (team2Count - idealCount + 1) * 3000;
+                        
+                        score += partnershipScore;
                         
                         // 随机因子
                         score += Math.random() * 10;
@@ -1744,6 +1765,12 @@
                             score2: 0,
                             matchIndex: matchIndex
                         });
+                        
+                        // 更新搭配计数器
+                        const team1Key = `${Math.min(bestCombo.team1[0], bestCombo.team1[1])}-${Math.max(bestCombo.team1[0], bestCombo.team1[1])}`;
+                        const team2Key = `${Math.min(bestCombo.team2[0], bestCombo.team2[1])}-${Math.max(bestCombo.team2[0], bestCombo.team2[1])}`;
+                        window.partnershipCount6[team1Key] = (window.partnershipCount6[team1Key] || 0) + 1;
+                        window.partnershipCount6[team2Key] = (window.partnershipCount6[team2Key] || 0) + 1;
                         
                         // 更新状态
                         for (const playerId of bestCombo.players) {
@@ -2169,6 +2196,14 @@
             const playerLastMatch = Array(5).fill(-999);
             const playerMatchCount = Array(5).fill(0);
             
+            // 重置搭配计数器（5人模式）
+            window.partnershipCount = {};
+            for (let i = 0; i < 5; i++) {
+                for (let j = i + 1; j < 5; j++) {
+                    window.partnershipCount[`${i}-${j}`] = 0;
+                }
+            }
+            
             for (let matchIndex = 0; matchIndex < 15; matchIndex++) {
                 let bestCombo = null;
                 let bestScore = -Infinity;
@@ -2229,29 +2264,47 @@
                         score += minRestTime * 5000;
                     }
                     
-                    // 新增：队友搭配平衡性检查（5人模式）
-                    let partnershipPenalty = 0;
-                    const team1Players = combo.team1;
-                    const team2Players = combo.team2;
-                    
-                    // 检查已有比赛中这些搭配出现的频率
-                    for (let i = 0; i < matchIndex; i++) {
-                        const prevMatch = selectedMatches[i];
-                        if (prevMatch) {
-                            // 检查队伍1的搭配是否重复
-                            if ((team1Players[0] === prevMatch.team1[0] && team1Players[1] === prevMatch.team1[1]) ||
-                                (team1Players[0] === prevMatch.team1[1] && team1Players[1] === prevMatch.team1[0])) {
-                                partnershipPenalty += 3000; // 重度惩罚重复搭配
-                            }
-                            // 检查队伍2的搭配是否重复  
-                            if ((team2Players[0] === prevMatch.team2[0] && team2Players[1] === prevMatch.team2[1]) ||
-                                (team2Players[0] === prevMatch.team2[1] && team2Players[1] === prevMatch.team2[0])) {
-                                partnershipPenalty += 3000; // 重度惩罚重复搭配
+                        // 新增：智能搭配均衡系统（5人模式）
+                        let partnershipScore = 0;
+                        const team1Players = combo.team1;
+                        const team2Players = combo.team2;
+                        
+                        // 初始化搭配计数器（如果还没有的话）
+                        if (!window.partnershipCount) {
+                            window.partnershipCount = {};
+                            for (let i = 0; i < 5; i++) {
+                                for (let j = i + 1; j < 5; j++) {
+                                    window.partnershipCount[`${i}-${j}`] = 0;
+                                }
                             }
                         }
-                    }
-                    
-                    score -= partnershipPenalty; // 减去搭配重复的惩罚分
+                        
+                        // 计算当前搭配的出现次数
+                        const team1Key = `${Math.min(team1Players[0], team1Players[1])}-${Math.max(team1Players[0], team1Players[1])}`;
+                        const team2Key = `${Math.min(team2Players[0], team2Players[1])}-${Math.max(team2Players[0], team2Players[1])}`;
+                        
+                        const team1Count = window.partnershipCount[team1Key] || 0;
+                        const team2Count = window.partnershipCount[team2Key] || 0;
+                        
+                        // 理想情况下5人模式每对搭配应该出现3次
+                        const idealCount = 3;
+                        
+                        // 优先选择搭配次数少的组合
+                        const team1Priority = idealCount - team1Count;
+                        const team2Priority = idealCount - team2Count;
+                        
+                        partnershipScore += team1Priority * 2000; // 高权重优先未充分搭配的组合
+                        partnershipScore += team2Priority * 2000;
+                        
+                        // 额外奖励从未搭配过的组合
+                        if (team1Count === 0) partnershipScore += 5000;
+                        if (team2Count === 0) partnershipScore += 5000;
+                        
+                        // 惩罚过度搭配的组合
+                        if (team1Count >= idealCount) partnershipScore -= (team1Count - idealCount + 1) * 4000;
+                        if (team2Count >= idealCount) partnershipScore -= (team2Count - idealCount + 1) * 4000;
+                        
+                        score += partnershipScore;
                     
                     // 平衡休息的人的状态
                     const restPlayerRestTime = matchIndex - playerLastMatch[combo.restPlayer];
@@ -2276,6 +2329,12 @@
                 // 记录选择的组合
                 selectedMatches.push(bestCombo);
                 usedCombinations.add(bestCombo.players.join(',') + '-' + bestCombo.restPlayer);
+                
+                // 更新搭配计数器
+                const team1Key = `${Math.min(bestCombo.team1[0], bestCombo.team1[1])}-${Math.max(bestCombo.team1[0], bestCombo.team1[1])}`;
+                const team2Key = `${Math.min(bestCombo.team2[0], bestCombo.team2[1])}-${Math.max(bestCombo.team2[0], bestCombo.team2[1])}`;
+                window.partnershipCount[team1Key] = (window.partnershipCount[team1Key] || 0) + 1;
+                window.partnershipCount[team2Key] = (window.partnershipCount[team2Key] || 0) + 1;
                 
                 // 更新玩家状态
                 for (const playerId of bestCombo.players) {
@@ -2783,11 +2842,70 @@
             throw new Error('无法生成符合要求的5人比赛安排');
         }
         
+        // 显示搭配统计
+        function displayPartnershipStats() {
+            const activePlayers = getActivePlayers();
+            const playerCount = activePlayers.length;
+            console.log('🤝 队友搭配统计：');
+            
+            // 统计实际搭配情况
+            const partnershipStats = {};
+            for (let i = 0; i < playerCount; i++) {
+                for (let j = i + 1; j < playerCount; j++) {
+                    partnershipStats[`${i}-${j}`] = 0;
+                }
+            }
+            
+            matchSchedule.forEach((match, index) => {
+                // 统计队伍1的搭配
+                const team1Ids = match.team1.map(name => 
+                    activePlayers.findIndex(p => p.name === name));
+                const team2Ids = match.team2.map(name => 
+                    activePlayers.findIndex(p => p.name === name));
+                
+                if (team1Ids.length === 2 && team1Ids[0] !== -1 && team1Ids[1] !== -1) {
+                    const key = `${Math.min(team1Ids[0], team1Ids[1])}-${Math.max(team1Ids[0], team1Ids[1])}`;
+                    partnershipStats[key] = (partnershipStats[key] || 0) + 1;
+                }
+                
+                if (team2Ids.length === 2 && team2Ids[0] !== -1 && team2Ids[1] !== -1) {
+                    const key = `${Math.min(team2Ids[0], team2Ids[1])}-${Math.max(team2Ids[0], team2Ids[1])}`;
+                    partnershipStats[key] = (partnershipStats[key] || 0) + 1;
+                }
+            });
+            
+            console.log('每对搭配次数：');
+            Object.entries(partnershipStats).forEach(([key, count]) => {
+                const [id1, id2] = key.split('-').map(Number);
+                const name1 = activePlayers[id1]?.name || `玩家${id1+1}`;
+                const name2 = activePlayers[id2]?.name || `玩家${id2+1}`;
+                console.log(`  ${name1} + ${name2}: ${count}次`);
+            });
+            
+            const counts = Object.values(partnershipStats);
+            const minCount = Math.min(...counts);
+            const maxCount = Math.max(...counts);
+            const avgCount = counts.reduce((a, b) => a + b, 0) / counts.length;
+            
+            console.log(`搭配均衡性: 最少${minCount}次, 最多${maxCount}次, 平均${avgCount.toFixed(1)}次`);
+            
+            if (maxCount - minCount <= 1) {
+                console.log('✅ 搭配非常均衡！');
+            } else if (maxCount - minCount <= 2) {
+                console.log('👍 搭配基本均衡');
+            } else {
+                console.log('⚠️ 搭配不够均衡，需要优化');
+            }
+        }
+
         // 验证15场比赛的公平性
         function validateMatchFairness() {
             console.log('🏸 验证15场比赛公平性：');
             const activePlayers = getActivePlayers();
             const playerCount = activePlayers.length;
+            
+            // 显示搭配统计
+            displayPartnershipStats();
             
                 const playerMatchCounts = {};
             const playerPartners = {};
