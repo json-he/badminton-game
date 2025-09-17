@@ -3765,16 +3765,17 @@
                 }
             });
 
+            // 修改逻辑：允许查看临时排名，但提供提示信息
             if (incompleteMatches.length > 0) {
+                const completedMatches = matchSchedule.length - incompleteMatches.length;
                 showAlert(
-                    `还有 ${incompleteMatches.length} 场比赛未记录比分！\n\n请完成所有比赛后再查看排名。`,
-                    '⚠️ 比赛未完成',
-                    'warning'
+                    `当前显示临时排名（基于已完成的 ${completedMatches} 场比赛）\n\n还有 ${incompleteMatches.length} 场比赛未记录比分，排名可能会发生变化。`,
+                    '📊 临时排名',
+                    'info'
                 );
-                return;
             }
 
-            calculateAndDisplayResults();
+            calculateAndDisplayResults(incompleteMatches.length > 0);
             document.getElementById('finalRanking').style.display = 'block';
             
             window.lastActionType = 'show_ranking';
@@ -3789,7 +3790,7 @@
         }
 
         // 计算排名
-        function calculateAndDisplayResults() {
+        function calculateAndDisplayResults(isTemporary = false) {
             const activePlayers = getActivePlayers();
             const playerStats = {};
             
@@ -3802,8 +3803,11 @@
                 };
             });
 
+            // 统计已完成比赛的数量
+            let completedMatches = 0;
             matchSchedule.forEach(match => {
                     if (match.score1 > 0 || match.score2 > 0) {
+                        completedMatches++;
                         match.team1.forEach(player => {
                         if (playerStats[player]) {
                             playerStats[player].totalScore += match.score1;
@@ -3836,7 +3840,14 @@
             });
 
             const resultsGrid = document.getElementById('resultsGrid');
-            resultsGrid.innerHTML = `
+            
+            // 根据是否为临时排名显示不同的标题
+            const headerTitle = isTemporary ? 
+                `<div style="text-align: center; margin-bottom: 10px; color: #f39c12; font-weight: bold;">
+                    📊 临时排名 (基于已完成的 ${completedMatches}/${matchSchedule.length} 场比赛)
+                </div>` : '';
+            
+            resultsGrid.innerHTML = headerTitle + `
                 <div class="result-row header">
                     <div class="rank-cell">排名</div>
                     <div class="name-cell">姓名</div>
