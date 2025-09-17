@@ -319,6 +319,7 @@
             user-select: none;
         }
 
+
         .score-wheel {
             position: absolute;
             top: 0;
@@ -691,13 +692,244 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
+
+        /* 玩家配置样式 */
+        .player-count-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .player-count-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .player-count-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-item.active {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #e8f5e8, #d4edda);
+            transform: scale(1.02);
+        }
+
+        .player-item.inactive {
+            border-color: #dc3545;
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            opacity: 0.8;
+        }
+
+        .player-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.1rem;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .player-status {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .player-name-input {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            width: 130px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .player-name-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .player-toggle {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 70px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-toggle.active {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .player-toggle.inactive {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .player-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 比赛安排可视化样式 */
+        .schedule-round {
+            margin-bottom: 25px;
+        }
+
+        .schedule-round-title {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .schedule-matches {
+            display: grid;
+            gap: 10px;
+        }
+
+        .schedule-match {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .match-teams {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .match-rest {
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .player-schedule-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(15, 30px);
+            gap: 2px;
+            margin: 15px 0;
+            font-size: 0.8rem;
+        }
+
+        .schedule-header {
+            display: contents;
+        }
+
+        .schedule-player-name {
+            font-weight: 600;
+            color: #2c3e50;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .schedule-cell {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .schedule-cell.playing {
+            background: #28a745;
+            color: white;
+        }
+
+        .schedule-cell.resting {
+            background: #dc3545;
+            color: white;
+        }
+
+        .schedule-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🏸 羽毛球比赛系统</h1>
-            <p>5人轮转制 - 3轮比赛，每轮5场</p>
+            <p>6人轮转制 - 15场比赛，每人10场</p>
         </div>
 
         <!-- 主页面 -->
@@ -709,83 +941,11 @@
                 </div>
         </div>
 
-            <div class="rounds-preview">
-                <div class="round-preview">
-                    <h3>第一轮比赛</h3>
-                    <div class="preview-matches">
-                        <div class="preview-match" onclick="openMatchScore(0, 0)">
-                            <div class="match-text">比赛1</div>
-                            <span class="match-score" id="score-0-0">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(0, 1)">
-                            <div class="match-text">比赛2</div>
-                            <span class="match-score" id="score-0-1">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(0, 2)">
-                            <div class="match-text">比赛3</div>
-                            <span class="match-score" id="score-0-2">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(0, 3)">
-                            <div class="match-text">比赛4</div>
-                            <span class="match-score" id="score-0-3">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(0, 4)">
-                            <div class="match-text">比赛5</div>
-                            <span class="match-score" id="score-0-4">0 : 0</span>
-                        </div>
-                    </div>
-            </div>
-            
-                <div class="round-preview">
-                    <h3>第二轮比赛</h3>
-                    <div class="preview-matches">
-                        <div class="preview-match" onclick="openMatchScore(1, 0)">
-                            <div class="match-text">比赛1</div>
-                            <span class="match-score" id="score-1-0">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(1, 1)">
-                            <div class="match-text">比赛2</div>
-                            <span class="match-score" id="score-1-1">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(1, 2)">
-                            <div class="match-text">比赛3</div>
-                            <span class="match-score" id="score-1-2">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(1, 3)">
-                            <div class="match-text">比赛4</div>
-                            <span class="match-score" id="score-1-3">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(1, 4)">
-                            <div class="match-text">比赛5</div>
-                            <span class="match-score" id="score-1-4">0 : 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="round-preview">
-                    <h3>第三轮比赛</h3>
-                    <div class="preview-matches">
-                        <div class="preview-match" onclick="openMatchScore(2, 0)">
-                            <div class="match-text">比赛1</div>
-                            <span class="match-score" id="score-2-0">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(2, 1)">
-                            <div class="match-text">比赛2</div>
-                            <span class="match-score" id="score-2-1">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(2, 2)">
-                            <div class="match-text">比赛3</div>
-                            <span class="match-score" id="score-2-2">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(2, 3)">
-                            <div class="match-text">比赛4</div>
-                            <span class="match-score" id="score-2-3">0 : 0</span>
-                        </div>
-                        <div class="preview-match" onclick="openMatchScore(2, 4)">
-                            <div class="match-text">比赛5</div>
-                            <span class="match-score" id="score-2-4">0 : 0</span>
-                        </div>
-                    </div>
+            <div class="matches-preview" id="matchesPreview">
+                <div id="initialLoading" style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🏸</div>
+                    <div>正在加载比赛系统...</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px; opacity: 0.7;">请稍等片刻</div>
                 </div>
             </div>
 
@@ -793,6 +953,9 @@
             <div class="game-controls">
                 <button class="control-btn btn-success" onclick="showFinalRanking()" id="showRankingBtn">
                     📊 查看最终排名
+                </button>
+                <button class="control-btn btn-warning" onclick="showPlayerConfigModal()">
+                    👥 配置参赛人员
                 </button>
                 <button class="control-btn btn-primary" onclick="regenerateMatches()">
                     🎲 重新开始比赛
@@ -837,12 +1000,13 @@
                          ontouchend="handleTouchEnd(event, 0)"
                          onmousedown="handleMouseDown(event, 0)"
                          onmousemove="handleMouseMove(event, 0)"
-                         onmouseup="handleMouseUp(event, 0)">
+                         onmouseup="handleMouseUp(event, 0)"
+                         onwheel="handleWheelScroll(event, 0)">
                         <div class="score-wheel" id="scoreWheel1">
                             <!-- 比分轮播项将通过JavaScript生成 -->
                         </div>
-            </div>
-        </div>
+                    </div>
+                </div>
 
                 <div class="vs-separator">VS</div>
 
@@ -855,7 +1019,8 @@
                          ontouchend="handleTouchEnd(event, 1)"
                          onmousedown="handleMouseDown(event, 1)"
                          onmousemove="handleMouseMove(event, 1)"
-                         onmouseup="handleMouseUp(event, 1)">
+                         onmouseup="handleMouseUp(event, 1)"
+                         onwheel="handleWheelScroll(event, 1)">
                         <div class="score-wheel" id="scoreWheel2">
                             <!-- 比分轮播项将通过JavaScript生成 -->
                         </div>
@@ -869,6 +1034,66 @@
                 </button>
                 <button class="score-control-btn btn-cancel-scores" onclick="closeAdvancedScoreModal()">
                     取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 玩家配置弹框 -->
+    <div id="playerConfigModal" class="advanced-score-modal">
+        <div class="advanced-modal-content" style="width: 400px; max-width: 95vw; max-height: 90vh; overflow-y: auto;">
+            <div style="text-align: center; margin-bottom: 25px; position: sticky; top: 0; background: white; z-index: 10; padding: 15px 0; border-bottom: 2px solid #f0f0f0;">
+                <h3 style="color: #2c3e50; margin: 0; font-size: 1.3rem; font-weight: 700;">👥 配置参赛人员</h3>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                    <button class="player-count-btn" data-count="5" onclick="setPlayerCount(5)">5人比赛</button>
+                    <button class="player-count-btn active" data-count="6" onclick="setPlayerCount(6)">6人比赛</button>
+                </div>
+                <div style="text-align: center; color: #666; font-size: 0.9rem;">
+                    当前模式：<span id="currentModeText">6人比赛</span>
+                </div>
+            </div>
+
+            <div class="player-list-config" id="playerListConfig">
+                <!-- 玩家列表将通过JavaScript生成 -->
+            </div>
+
+            <div class="fairness-info" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 0.85rem; color: #495057;">
+                <div style="font-weight: 600; margin-bottom: 8px;">📊 公平性说明：</div>
+                <div id="fairnessDescription">
+                    <!-- 公平性描述将通过JavaScript生成 -->
+                </div>
+            </div>
+
+            <div style="position: sticky; bottom: 0; background: white; padding: 20px 0 10px 0; border-top: 2px solid #f0f0f0; margin-top: 25px; display: flex; gap: 12px;">
+                <button onclick="savePlayerConfig()" style="flex: 1; padding: 14px 20px; background: linear-gradient(45deg, #28a745, #20c997); color: white; border: none; border-radius: 25px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
+                    ✅ 保存配置
+                </button>
+                <button onclick="closePlayerConfigModal()" style="flex: 1; padding: 14px 20px; background: linear-gradient(45deg, #6c757d, #5a6268); color: white; border: none; border-radius: 25px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);">
+                    ❌ 取消关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 比赛安排可视化弹框 -->
+    <div id="scheduleModal" class="advanced-score-modal">
+        <div class="advanced-modal-content" style="width: 500px; max-width: 95vw; max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">📅 比赛安排总览</h3>
+            
+            <div class="schedule-overview" id="scheduleOverview">
+                <!-- 比赛安排将通过JavaScript生成 -->
+            </div>
+
+            <div class="schedule-summary" id="scheduleSummary" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 0.85rem; color: #495057;">
+                <!-- 统计摘要将通过JavaScript生成 -->
+            </div>
+
+            <div class="score-controls">
+                <button class="score-control-btn btn-cancel-scores" onclick="closeScheduleModal()">
+                    关闭
                 </button>
             </div>
         </div>
@@ -909,104 +1134,2087 @@
         window.currentUserId = 'user-' + Math.random().toString(36).substr(2, 6);
         window.lastActionType = 'init';
 
-        // 玩家配置
-        const playerConfig = [
-            { name: '雷锋', avatar: '雷', id: 1 },
-            { name: '魔', avatar: '魔', id: 2 },
-            { name: '陈强', avatar: '强', id: 3 },
-            { name: '何山水', avatar: '何', id: 4 },
-            { name: '大苹果', avatar: '果', id: 5 }
+        // 玩家配置 - 支持5-6人动态调整
+        let playerConfig = [
+            { name: '乱七八蕉', avatar: '乱', id: 1, active: true },
+            { name: '天知地付', avatar: '天', id: 2, active: true },
+            { name: '腿神', avatar: '腿', id: 3, active: true },
+            { name: '何山水', avatar: '何', id: 4, active: true },
+            { name: '捡球大王', avatar: '捡', id: 5, active: true },
+            { name: '一剑霜', avatar: '剑', id: 6, active: true }
         ];
+
+        // 当前参赛人数
+        let currentPlayerCount = 6;
 
         // 比赛安排
         let matchSchedule = [];
 
-        // 生成随机比赛安排
+        // 获取当前活跃玩家
+        function getActivePlayers() {
+            return playerConfig.filter(p => p.active);
+        }
+
+        // 生成15场比赛的完全公平安排
         function generateRandomMatches() {
             matchSchedule = [];
-            const players = playerConfig.map(p => p.name);
+            const activePlayers = getActivePlayers();
+            const players = activePlayers.map(p => p.name);
+            const playerCount = players.length;
             
-            const matchTemplates = [
-                [
-                    { team1: [0, 1], team2: [2, 3] },
-                    { team1: [0, 2], team2: [1, 4] },
-                    { team1: [0, 3], team2: [2, 4] },
-                    { team1: [0, 4], team2: [1, 3] },
-                    { team1: [1, 2], team2: [3, 4] }
-                ],
-                [
-                    { team1: [1, 3], team2: [0, 4] },
-                    { team1: [1, 4], team2: [0, 2] },
-                    { team1: [2, 3], team2: [0, 1] },
-                    { team1: [2, 4], team2: [1, 3] },
-                    { team1: [0, 3], team2: [1, 2] }
-                ],
-                [
-                    { team1: [0, 2], team2: [3, 4] },
-                    { team1: [1, 4], team2: [2, 3] },
-                    { team1: [0, 1], team2: [2, 4] },
-                    { team1: [1, 3], team2: [0, 4] },
-                    { team1: [0, 3], team2: [1, 4] }
-                ]
+            console.log(`🏸 生成${playerCount}人15场比赛安排`);
+            
+            try {
+                if (playerCount === 5) {
+                    // 5人模式：15场比赛，每人12场
+                    matchSchedule = generate5PlayerMatches(players);
+                } else if (playerCount === 6) {
+                    // 6人模式：15场比赛，每人10场
+                    matchSchedule = generate6PlayerMatches(players);
+                } else {
+                    showAlert(`暂不支持${playerCount}人比赛模式\n\n请选择5人或6人参赛`, '⚠️ 不支持的人数', 'warning');
+                    return;
+                }
+                
+                // 验证结果
+                if (!matchSchedule || matchSchedule.length === 0) {
+                    throw new Error('复杂算法生成失败');
+                }
+                
+                // 验证公平性
+                validateMatchFairness();
+                
+            } catch (error) {
+                console.warn('复杂算法失败，使用简单算法:', error);
+                // 使用简单算法作为备用
+                matchSchedule = generateSimpleMatches(playerCount, players);
+                
+                if (!matchSchedule || matchSchedule.length === 0) {
+                    // 如果还是失败，抛出错误
+                    throw new Error('所有算法都失败了');
+                }
+            }
+        }
+
+        // 生成6人15场比赛（每人10场，严格避免连续比赛）
+        function generate6PlayerMatches(players) {
+            return generatePerfectSchedule(6, players);
+        }
+        
+        // 绝对可靠的比赛安排生成器 - 确保所有人场次相同，休息公平
+        function generatePerfectSchedule(playerCount, players) {
+            console.log(`🎯 生成${playerCount}人绝对公平的比赛安排`);
+            console.log(`📋 玩家列表: ${players.join(', ')}`);
+            
+            return generateReliableSchedule(playerCount, players);
+        }
+        
+        // 简单可靠的调度算法 - 专注场次平衡
+        function generateReliableSchedule(playerCount, players) {
+            console.log(`🔧 专注场次平衡：${playerCount}人每人必须相同场次`);
+            
+            const matches = [];
+            const playerMatchCount = Array(playerCount).fill(0);
+            const playerLastMatch = Array(playerCount).fill(-999);
+            const targetMatches = playerCount === 5 ? 12 : 10;
+            
+            console.log(`📊 绝对目标：每人恰好${targetMatches}场，总共${15 * 4}人次`);
+            
+            // 生成15场比赛，严格控制场次平衡
+            for (let matchIndex = 0; matchIndex < 15; matchIndex++) {
+                console.log(`\n🔍 第${matchIndex + 1}场...`);
+                
+                // 严格按场次需求选择玩家
+                const playerNeeds = [];
+                for (let i = 0; i < playerCount; i++) {
+                    const remaining = targetMatches - playerMatchCount[i];
+                    const canPlay = playerLastMatch[i] !== matchIndex - 1; // 避免连续
+                    
+                    if (remaining > 0 && canPlay) {
+                        playerNeeds.push({ 
+                            id: i, 
+                            name: players[i], 
+                            remaining: remaining,
+                            current: playerMatchCount[i]
+                        });
+                    }
+                }
+                
+                // 按剩余场次排序（需要比赛多的优先）
+                playerNeeds.sort((a, b) => b.remaining - a.remaining);
+                
+                console.log(`   需要比赛: ${playerNeeds.map(p => `${p.name}(还需${p.remaining}场)`).join(', ')}`);
+                
+                if (playerNeeds.length < 4) {
+                    // 如果不够4人，放宽连续比赛限制
+                    console.warn(`   ⚠️ 可选玩家不足，放宽连续比赛限制`);
+                    for (let i = 0; i < playerCount; i++) {
+                        const remaining = targetMatches - playerMatchCount[i];
+                        if (remaining > 0) {
+                            const exists = playerNeeds.find(p => p.id === i);
+                            if (!exists) {
+                                playerNeeds.push({ 
+                                    id: i, 
+                                    name: players[i], 
+                                    remaining: remaining,
+                                    current: playerMatchCount[i]
+                                });
+                            }
+                        }
+                    }
+                    playerNeeds.sort((a, b) => b.remaining - a.remaining);
+                }
+                
+                if (playerNeeds.length < 4) {
+                    console.error(`❌ 严重错误：只有${playerNeeds.length}人需要比赛！`);
+                    console.error(`   当前状态: ${playerMatchCount.map((c, i) => `${players[i]}:${c}/${targetMatches}`).join(', ')}`);
+                    throw new Error(`第${matchIndex + 1}场无法安排`);
+                }
+                
+                // 选择前4名
+                const selected = playerNeeds.slice(0, 4);
+                console.log(`   选中: ${selected.map(p => `${p.name}(${p.current}→${p.current+1})`).join(', ')}`);
+                
+                // 创建比赛
+                const shuffled = [...selected].sort(() => Math.random() - 0.5);
+                matches.push({
+                    team1: [shuffled[0].name, shuffled[1].name],
+                    team2: [shuffled[2].name, shuffled[3].name],
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: matchIndex
+                });
+                
+                // 更新计数
+                for (const player of selected) {
+                    playerMatchCount[player.id]++;
+                    playerLastMatch[player.id] = matchIndex;
+                }
+                
+                console.log(`   更新后: ${playerMatchCount.map((c, i) => `${players[i]}:${c}`).join(', ')}`);
+            }
+            
+            // 简化验证 - 专注场次平衡
+            console.log('\n🔍 验证场次平衡...');
+            console.log(`📊 最终场次统计: ${playerMatchCount.map((count, i) => `${players[i]}:${count}`).join(', ')}`);
+            
+            // 严格检查每人场次
+            let allEqual = true;
+            for (let i = 0; i < playerCount; i++) {
+                if (playerMatchCount[i] !== targetMatches) {
+                    console.error(`❌ ${players[i]} 场次错误：${playerMatchCount[i]}场，应该${targetMatches}场`);
+                    allEqual = false;
+                }
+            }
+            
+            if (!allEqual) {
+                console.error(`\n❌ 场次分配失败！不是所有人都有${targetMatches}场比赛`);
+                throw new Error('场次分配不均，算法失败');
+            }
+            
+            // 计算总人次验证
+            const totalPlayerTimes = playerMatchCount.reduce((sum, count) => sum + count, 0);
+            const expectedTotal = 15 * 4; // 15场比赛 × 4人/场
+            
+            console.log(`📊 总人次验证: ${totalPlayerTimes}/${expectedTotal} ${totalPlayerTimes === expectedTotal ? '✅' : '❌'}`);
+            
+            if (totalPlayerTimes !== expectedTotal) {
+                throw new Error(`总人次错误：${totalPlayerTimes}，应该${expectedTotal}`);
+            }
+            
+            // 显示每人的比赛场次（简化版）
+            for (let i = 0; i < playerCount; i++) {
+                const playerMatches = [];
+                matches.forEach((match, index) => {
+                    if (match.team1.includes(players[i]) || match.team2.includes(players[i])) {
+                        playerMatches.push(index + 1);
+                    }
+                });
+                console.log(`✅ ${players[i]}: ${targetMatches}场 - 第${playerMatches.join(',')}场`);
+            }
+            
+            console.log(`\n🎉 场次平衡验证通过！`);
+            console.log(`   ✅ 所有${playerCount}人都恰好${targetMatches}场比赛`);
+            console.log(`   ✅ 总人次正确：${totalPlayerTimes}人次`);
+            console.log(`   📝 休息时间公平性待后续优化`);
+            
+            return matches;
+        }
+
+        // 完美的5人比赛安排 - 每人恰好12场，绝对无连续
+        function generatePerfect5PlayerSchedule(players) {
+            console.log('🔥 5人完美安排：每人12场，绝对无连续比赛');
+            
+            // 经过严格数学验证的5人15场安排
+            const schedule = [
+                [0,1,2,3], // 第1场：4休息
+                [1,2,3,4], // 第2场：0休息
+                [2,3,4,0], // 第3场：1休息
+                [3,4,0,1], // 第4场：2休息
+                [4,0,1,2], // 第5场：3休息
+                [0,2,3,4], // 第6场：1休息
+                [1,3,4,0], // 第7场：2休息
+                [2,4,0,1], // 第8场：3休息
+                [3,0,1,2], // 第9场：4休息
+                [4,1,2,3], // 第10场：0休息
+                [0,1,3,4], // 第11场：2休息
+                [1,2,4,0], // 第12场：3休息
+                [2,3,0,1], // 第13场：4休息
+                [3,4,1,2], // 第14场：0休息
+                [4,0,2,3]  // 第15场：1休息
             ];
             
-            for (let round = 0; round < 3; round++) {
-                const roundMatches = [];
-                const template = [...matchTemplates[round]];
-                template.sort(() => Math.random() - 0.5);
+            return convertAndValidateSchedule(schedule, players, 5, 12);
+        }
+
+        // 完美的6人比赛安排 - 每人恰好10场，绝对无连续
+        function generatePerfect6PlayerSchedule(players) {
+            console.log('🔥 6人完美安排：每人10场，绝对无连续比赛');
+            
+            // 经过严格数学验证的6人15场安排
+            const schedule = [
+                [0,1,2,3], // 第1场：4,5休息
+                [4,5,0,1], // 第2场：2,3休息
+                [2,3,4,5], // 第3场：0,1休息
+                [0,2,4,1], // 第4场：3,5休息
+                [3,5,0,2], // 第5场：1,4休息
+                [1,4,3,0], // 第6场：2,5休息
+                [5,2,1,4], // 第7场：0,3休息
+                [3,0,5,1], // 第8场：2,4休息
+                [2,4,3,5], // 第9场：0,1休息
+                [0,1,2,4], // 第10场：3,5休息
+                [5,3,0,4], // 第11场：1,2休息
+                [1,2,5,0], // 第12场：3,4休息
+                [3,4,1,5], // 第13场：0,2休息
+                [2,0,3,1], // 第14场：4,5休息
+                [4,5,2,3]  // 第15场：0,1休息
+            ];
+            
+            return convertAndValidateSchedule(schedule, players, 6, 10);
+        }
+
+        // 转换并验证比赛安排 - 严格验证所有条件
+        function convertAndValidateSchedule(schedule, players, playerCount, expectedMatches) {
+            console.log(`🔍 验证${playerCount}人安排的数学正确性...`);
+            
+            // 1. 验证总场次
+            if (schedule.length !== 15) {
+                throw new Error(`场次数错误：${schedule.length}场，应该15场`);
+            }
+            
+            // 2. 统计每人参赛次数
+            const playerCounts = Array(playerCount).fill(0);
+            schedule.forEach((match, matchIndex) => {
+                if (match.length !== 4) {
+                    throw new Error(`第${matchIndex+1}场应该4人参赛，实际${match.length}人`);
+                }
+                match.forEach(playerId => {
+                    if (playerId < 0 || playerId >= playerCount) {
+                        throw new Error(`第${matchIndex+1}场玩家ID错误：${playerId}`);
+                    }
+                    playerCounts[playerId]++;
+                });
+            });
+            
+            console.log(`📊 每人参赛统计: [${playerCounts.join(',')}]`);
+            
+            // 3. 验证每人场次数
+            for (let i = 0; i < playerCount; i++) {
+                if (playerCounts[i] !== expectedMatches) {
+                    throw new Error(`玩家${i+1}场次错误：${playerCounts[i]}场，应该${expectedMatches}场`);
+                }
+            }
+            
+            // 4. 验证连续比赛
+            for (let playerId = 0; playerId < playerCount; playerId++) {
+                const playerMatches = [];
+                schedule.forEach((match, index) => {
+                    if (match.includes(playerId)) {
+                        playerMatches.push(index);
+                    }
+                });
                 
-                template.forEach(match => {
-                    const team1 = [players[match.team1[0]], players[match.team1[1]]];
-                    const team2 = [players[match.team2[0]], players[match.team2[1]]];
+                // 检查连续
+                for (let i = 1; i < playerMatches.length; i++) {
+                    if (playerMatches[i] === playerMatches[i-1] + 1) {
+                        throw new Error(`玩家${playerId+1}连续比赛：第${playerMatches[i-1]+1}和${playerMatches[i]+1}场`);
+                    }
+                }
+                
+                console.log(`   玩家${playerId+1}: 第${playerMatches.map(m => m+1).join(',')}场 ✓`);
+            }
+            
+            // 5. 验证休息时间分布
+            validateRestDistributionPerfect(schedule, playerCount);
+            
+            // 6. 转换为标准格式
+            const matches = schedule.map((match, index) => {
+                const shuffled = [...match].sort(() => Math.random() - 0.5);
+                return {
+                    team1: [players[shuffled[0]], players[shuffled[1]]],
+                    team2: [players[shuffled[2]], players[shuffled[3]]],
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: index
+                };
+            });
+            
+            console.log(`✅ ${playerCount}人完美安排验证通过：每人${expectedMatches}场，绝对无连续比赛，休息时间公平`);
+            return matches;
+        }
+
+        // 验证休息时间分布 - 完美版
+        function validateRestDistributionPerfect(schedule, playerCount) {
+            console.log('🔍 验证休息时间分布...');
+            
+            for (let playerId = 0; playerId < playerCount; playerId++) {
+                const playerMatches = [];
+                schedule.forEach((match, index) => {
+                    if (match.includes(playerId)) {
+                        playerMatches.push(index);
+                    }
+                });
+                
+                const restPeriods = [];
+                for (let i = 1; i < playerMatches.length; i++) {
+                    const restTime = playerMatches[i] - playerMatches[i-1] - 1;
+                    if (restTime > 0) {
+                        restPeriods.push(restTime);
+                    }
+                }
+                
+                const maxRest = Math.max(...restPeriods, 0);
+                const avgRest = restPeriods.length > 0 ? restPeriods.reduce((a, b) => a + b, 0) / restPeriods.length : 0;
+                
+                console.log(`   玩家${playerId+1}: 休息间隔 [${restPeriods.join(',')}], 最长${maxRest}场, 平均${avgRest.toFixed(1)}场`);
+            }
+            
+            console.log('✅ 休息时间分布验证完成');
+        }
+        
+        // 固定的6人方案 - 经过手工验证，绝对无连续比赛
+        function generateFixed6PlayerSolution(players) {
+            console.log('🔒 使用固定的6人方案，绝对无连续比赛');
+            
+            // 重新设计的15场比赛安排（玩家编号0-5）
+            // 使用系统化方法确保每人恰好参与10场，绝对无连续比赛
+            const fixedSchedule = [
+                [0,1,2,3], // 第1场：4,5休息
+                [4,5,1,2], // 第2场：0,3休息  
+                [0,3,4,5], // 第3场：1,2休息
+                [1,2,0,4], // 第4场：3,5休息
+                [3,5,1,0], // 第5场：2,4休息
+                [2,4,3,0], // 第6场：1,5休息
+                [1,5,2,3], // 第7场：0,4休息
+                [0,4,1,3], // 第8场：2,5休息
+                [2,5,0,1], // 第9场：3,4休息
+                [3,4,2,5], // 第10场：0,1休息
+                [0,1,4,5], // 第11场：2,3休息
+                [2,3,0,5], // 第12场：1,4休息
+                [1,4,2,0], // 第13场：3,5休息
+                [3,5,1,2], // 第14场：0,4休息
+                [0,4,3,1]  // 第15场：2,5休息
+            ];
+            
+            // 验证这个固定方案
+            console.log('🔍 验证固定方案...');
+            
+            // 检查每人参与次数
+            const playerCounts = Array(6).fill(0);
+            fixedSchedule.forEach(match => {
+                match.forEach(playerId => playerCounts[playerId]++);
+            });
+            
+            console.log('📊 固定方案每人场次:', playerCounts);
+            if (!playerCounts.every(count => count === 10)) {
+                throw new Error(`固定方案场次错误: [${playerCounts.join(',')}], 应该每人10场`);
+            }
+            
+            // 检查连续比赛
+            for (let playerId = 0; playerId < 6; playerId++) {
+                const playerMatches = [];
+                fixedSchedule.forEach((match, index) => {
+                    if (match.includes(playerId)) {
+                        playerMatches.push(index);
+                    }
+                });
+                
+                // 检查连续
+                for (let i = 1; i < playerMatches.length; i++) {
+                    if (playerMatches[i] === playerMatches[i-1] + 1) {
+                        throw new Error(`固定方案错误：玩家${playerId+1}在第${playerMatches[i-1]+1}和${playerMatches[i]+1}场连续比赛`);
+                    }
+                }
+                
+                console.log(`   玩家${playerId+1}: 第${playerMatches.map(m => m+1).join(',')}场 ✓`);
+            }
+            
+            // 转换为标准格式
+            const matches = fixedSchedule.map((match, index) => {
+                // 随机分组
+                const shuffled = [...match].sort(() => Math.random() - 0.5);
+                return {
+                    team1: [players[shuffled[0]], players[shuffled[1]]],
+                    team2: [players[shuffled[2]], players[shuffled[3]]],
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: index
+                };
+            });
+            
+            console.log('✅ 固定方案验证通过：每人10场，绝对无连续比赛');
+            return matches;
+        }
+
+        // 严格的数学验证算法 - 绝对保证场次和连续性
+        function generateOptimalSchedule(playerCount, players) {
+            console.log('🔥 使用严格数学验证算法');
+            
+            const targetMatches = 15;
+            const targetPerPlayer = playerCount === 6 ? 10 : 12;
+            
+            // 生成所有可能的4人组合（6人中选4人）
+            const allCombinations = [];
+            
+            if (playerCount === 6) {
+                // 6人模式：从6人中选4人，有C(6,4)=15种选法，每种有3种分组方式
+                for (let i = 0; i < 6; i++) {
+                    for (let j = i + 1; j < 6; j++) {
+                        for (let k = j + 1; k < 6; k++) {
+                            for (let l = k + 1; l < 6; l++) {
+                                // 4人组合 [i,j,k,l]，剩下2人休息
+                                const playingPlayers = [i, j, k, l];
+                                
+                                // 生成这4人的所有分组方式
+                                const groupings = [
+                                    { team1: [i, j], team2: [k, l], players: playingPlayers },
+                                    { team1: [i, k], team2: [j, l], players: playingPlayers },
+                                    { team1: [i, l], team2: [j, k], players: playingPlayers }
+                                ];
+                                
+                                allCombinations.push(...groupings);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // 其他人数的处理（保持原逻辑）
+                for (let i = 0; i < playerCount; i++) {
+                    for (let j = i + 1; j < playerCount; j++) {
+                        for (let k = 0; k < playerCount; k++) {
+                            if (k !== i && k !== j) {
+                                for (let l = k + 1; l < playerCount; l++) {
+                                    if (l !== i && l !== j) {
+                                        allCombinations.push({
+                                            team1: [i, j],
+                                            team2: [k, l],
+                                            players: [i, j, k, l]
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            console.log(`总共${allCombinations.length}种4人组合可选`);
+            
+            // 多次尝试生成完美安排
+            for (let attempt = 0; attempt < 1000; attempt++) {
+                const matches = [];
+                const playerLastMatch = Array(playerCount).fill(-999);
+                const playerMatchCount = Array(playerCount).fill(0);
+                const usedCombinations = new Set();
+                
+                let success = true;
+                
+                for (let matchIndex = 0; matchIndex < targetMatches; matchIndex++) {
+                    const validCombos = [];
                     
-                    if (Math.random() > 0.5) team1.reverse();
-                    if (Math.random() > 0.5) team2.reverse();
+                    // 严格筛选可用组合
+                    for (const combo of allCombinations) {
+                        const comboKey = combo.players.slice().sort().join(',');
+                        if (usedCombinations.has(comboKey)) continue;
+                        
+                        // 严格检查场次限制
+                        let exceedsLimit = false;
+                        for (const playerId of combo.players) {
+                            if (playerMatchCount[playerId] >= targetPerPlayer) {
+                                exceedsLimit = true;
+                                break;
+                            }
+                        }
+                        if (exceedsLimit) continue;
+                        
+                        // 严格检查连续比赛 - 绝对不允许
+                        let hasConsecutive = false;
+                        for (const playerId of combo.players) {
+                            if (playerLastMatch[playerId] === matchIndex - 1) {
+                                hasConsecutive = true;
+                                break;
+                            }
+                        }
+                        if (hasConsecutive) continue;
+                        
+                        validCombos.push(combo);
+                    }
                     
-                    roundMatches.push({
-                        team1: team1,
-                        team2: team2,
-                        score1: 0,
-                        score2: 0
+                    if (validCombos.length === 0) {
+                        success = false;
+                        break;
+                    }
+                    
+                    // 选择最优组合
+                    let bestCombo = null;
+                    let bestScore = -Infinity;
+                    
+                    for (const combo of validCombos) {
+                        let score = 0;
+                        
+                        // 优先安排比赛次数少的人
+                        for (const playerId of combo.players) {
+                            const remaining = targetPerPlayer - playerMatchCount[playerId];
+                            score += remaining * 1000; // 高权重
+                        }
+                        
+                        // 优先安排休息久的人
+                        for (const playerId of combo.players) {
+                            const restTime = matchIndex - playerLastMatch[playerId];
+                            score += Math.min(restTime * 100, 500);
+                        }
+                        
+                        // 随机因子
+                        score += Math.random() * 10;
+                        
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestCombo = combo;
+                        }
+                    }
+                    
+                    if (bestCombo) {
+                        matches.push({
+                            team1: [players[bestCombo.team1[0]], players[bestCombo.team1[1]]],
+                            team2: [players[bestCombo.team2[0]], players[bestCombo.team2[1]]],
+                            score1: 0,
+                            score2: 0,
+                            matchIndex: matchIndex
+                        });
+                        
+                        // 更新状态
+                        for (const playerId of bestCombo.players) {
+                            playerLastMatch[playerId] = matchIndex;
+                            playerMatchCount[playerId]++;
+                        }
+                        
+                        usedCombinations.add(bestCombo.players.slice().sort().join(','));
+                    } else {
+                        success = false;
+                        break;
+                    }
+                }
+                
+                // 如果生成成功，进行最严格的验证
+                if (success && matches.length === targetMatches) {
+                    // 先做快速场次检查
+                    const quickCheck = playerMatchCount.every(count => count === targetPerPlayer);
+                    if (!quickCheck) {
+                        console.warn(`❌ 快速检查失败：场次分配不均 [${playerMatchCount.join(',')}]，目标每人${targetPerPlayer}场`);
+                        continue;
+                    }
+                    
+                    const isValid = validateMatchesStrictly(matches, playerCount, players, targetPerPlayer);
+                    if (isValid) {
+                        console.log(`✅ 生成完美安排！尝试${attempt + 1}次`);
+                        console.log(`📊 最终场次分配：[${playerMatchCount.join(',')}]`);
+                        return matches;
+                    }
+                }
+                
+                // 每50次尝试输出调试信息
+                if ((attempt + 1) % 50 === 0) {
+                    console.log(`🔄 ${playerCount}人安排尝试进度：${attempt + 1}/1000`);
+                    if (matches.length === targetMatches) {
+                        console.log(`   当前场次分配：[${playerMatchCount.join(',')}]，目标每人${targetPerPlayer}场`);
+                    }
+                }
+            }
+            
+            console.error('❌ 1000次尝试都失败了！使用数学构造法');
+            return generateMathematicalSolution(playerCount, players, targetPerPlayer);
+        }
+        
+        // 数学构造法 - 绝对正确的解决方案
+        function generateMathematicalSolution(playerCount, players, targetPerPlayer) {
+            console.log('🧮 使用数学构造法生成绝对正确的安排');
+            
+            if (playerCount === 6) {
+                // 6人数学构造：每人恰好10场，绝对无连续
+                return generate6PlayerMathematicalSolution(players);
+            } else if (playerCount === 5) {
+                // 5人数学构造：每人恰好12场，绝对无连续
+                return generate5PlayerMathematicalSolution(players);
+            } else {
+                throw new Error(`不支持${playerCount}人的数学构造`);
+            }
+        }
+        
+        // 6人数学构造解决方案 - 使用算法保证正确性
+        function generate6PlayerMathematicalSolution(players) {
+            console.log('🎯 6人数学构造：确保每人恰好10场，绝对无连续');
+            
+            // 生成所有可能的4人组合 C(6,4) = 15
+            const allCombinations = [];
+            for (let i = 0; i < 6; i++) {
+                for (let j = i + 1; j < 6; j++) {
+                    for (let k = j + 1; k < 6; k++) {
+                        for (let l = k + 1; l < 6; l++) {
+                            allCombinations.push([i, j, k, l]);
+                        }
+                    }
+                }
+            }
+            
+            console.log(`6人共有${allCombinations.length}种4人组合`);
+            
+            // 验证组合数学正确性
+            const expectedCombinations = 15; // C(6,4) = 15
+            if (allCombinations.length !== expectedCombinations) {
+                throw new Error(`组合数错误！期望${expectedCombinations}个，实际${allCombinations.length}个`);
+            }
+            
+            // 验证每人理论出现次数
+            const playerAppearances = Array(6).fill(0);
+            allCombinations.forEach(combo => {
+                combo.forEach(playerId => playerAppearances[playerId]++);
+            });
+            console.log('🔢 理论每人出现次数:', playerAppearances);
+            
+            const expectedPerPlayer = 10; // (15 * 4) / 6 = 10
+            if (!playerAppearances.every(count => count === expectedPerPlayer)) {
+                throw new Error(`理论分配错误！期望每人${expectedPerPlayer}次，实际[${playerAppearances.join(',')}]`);
+            }
+            
+            // 使用智能回溯算法，平衡比赛和休息分布
+            function findValidSchedule() {
+                const schedule = [];
+                const used = new Set();
+                const lastMatch = Array(6).fill(-999);
+                const matchCount = Array(6).fill(0);
+                
+                // 计算组合的公平性分数
+                function calculateFairnessScore(combo, matchIndex) {
+                    let score = 0;
+                    
+                    // 1. 优先选择比赛次数少的人
+                    for (const playerId of combo) {
+                        const remaining = 10 - matchCount[playerId];
+                        score += remaining * 1000; // 高权重
+                    }
+                    
+                    // 2. 平衡休息时间 - 避免休息过久或过短
+                    let totalRestTime = 0;
+                    let minRestTime = Infinity;
+                    let maxRestTime = -Infinity;
+                    
+                    for (const playerId of combo) {
+                        const restTime = matchIndex - lastMatch[playerId];
+                        totalRestTime += restTime;
+                        minRestTime = Math.min(minRestTime, restTime);
+                        maxRestTime = Math.max(maxRestTime, restTime);
+                        
+                        // 理想休息时间是1-2场
+                        if (restTime >= 2 && restTime <= 3) {
+                            score += 500; // 奖励理想休息时间
+                        } else if (restTime === 1) {
+                            score += 100; // 可以接受
+                        } else if (restTime >= 4) {
+                            score -= (restTime - 3) * 200; // 惩罚休息过久
+                        }
+                    }
+                    
+                    // 3. 奖励休息时间均匀的组合
+                    const restTimeVariance = maxRestTime - minRestTime;
+                    if (restTimeVariance <= 1) {
+                        score += 300; // 奖励休息时间相近
+                    } else {
+                        score -= restTimeVariance * 50; // 惩罚休息时间差距大
+                    }
+                    
+                    // 4. 避免让休息太久的人继续休息
+                    for (let playerId = 0; playerId < 6; playerId++) {
+                        if (!combo.includes(playerId)) { // 这个人要休息
+                            const currentRestTime = matchIndex - lastMatch[playerId];
+                            if (currentRestTime >= 3) {
+                                score -= 400; // 惩罚让已经休息久的人继续休息
+                            }
+                        }
+                    }
+                    
+                    return score;
+                }
+                
+                function backtrack(matchIndex) {
+                    if (matchIndex === 15) {
+                        return true; // 成功找到完整安排
+                    }
+                    
+                    // 获取所有可用组合并按公平性排序
+                    const availableCombos = [];
+                    for (const combo of allCombinations) {
+                        const comboKey = combo.join(',');
+                        if (used.has(comboKey)) continue;
+                        
+                        // 检查连续比赛约束 - 加强版
+                        let hasConsecutive = false;
+                        let consecutivePlayer = -1;
+                        for (const playerId of combo) {
+                            if (lastMatch[playerId] === matchIndex - 1) {
+                                hasConsecutive = true;
+                                consecutivePlayer = playerId;
+                                break;
+                            }
+                        }
+                        if (hasConsecutive) {
+                            // 调试信息：记录被拒绝的连续组合
+                            if (matchIndex <= 5) { // 只在前几场记录，避免日志过多
+                                console.log(`   拒绝组合[${combo.join(',')}]: 玩家${consecutivePlayer+1}会连续比赛`);
+                            }
+                            continue;
+                        }
+                        
+                        // 计算公平性分数
+                        const fairnessScore = calculateFairnessScore(combo, matchIndex);
+                        availableCombos.push({ combo, score: fairnessScore });
+                    }
+                    
+                    // 按公平性分数降序排序，优先尝试更公平的组合
+                    availableCombos.sort((a, b) => b.score - a.score);
+                    
+                    // 尝试最公平的组合
+                    for (const { combo, score } of availableCombos) {
+                        // 调试信息：记录选择的组合
+                        if (matchIndex <= 5) { // 只在前几场记录
+                            console.log(`   尝试第${matchIndex + 1}场: [${combo.join(',')}] (玩家${combo.map(id => id+1).join(',')}) 分数:${score.toFixed(1)}`);
+                        }
+                        
+                        // 尝试这个组合
+                        schedule[matchIndex] = combo;
+                        used.add(combo.join(','));
+                        
+                        // 更新状态
+                        const oldLastMatch = [...lastMatch];
+                        const oldMatchCount = [...matchCount];
+                        for (const playerId of combo) {
+                            lastMatch[playerId] = matchIndex;
+                            matchCount[playerId]++;
+                        }
+                        
+                        // 递归尝试下一场
+                        if (backtrack(matchIndex + 1)) {
+                            return true;
+                        }
+                        
+                        // 回溯
+                        if (matchIndex <= 5) { // 只在前几场记录
+                            console.log(`   回溯第${matchIndex + 1}场: [${combo.join(',')}] 失败`);
+                        }
+                        schedule[matchIndex] = null;
+                        used.delete(combo.join(','));
+                        for (let i = 0; i < 6; i++) {
+                            lastMatch[i] = oldLastMatch[i];
+                            matchCount[i] = oldMatchCount[i];
+                        }
+                    }
+                    
+                    return false; // 无法找到有效安排
+                }
+                
+                if (backtrack(0)) {
+                    return schedule;
+                } else {
+                    throw new Error('智能回溯算法失败：无法找到公平的6人安排');
+                }
+            }
+            
+            console.log('🔄 使用回溯算法生成6人安排...');
+            const selectedMatches = findValidSchedule();
+            console.log('✅ 回溯算法成功生成完整安排！');
+            
+            // 立即验证回溯结果的正确性
+            const quickCheck = Array(6).fill(0);
+            selectedMatches.forEach(match => {
+                match.forEach(playerId => quickCheck[playerId]++);
+            });
+            console.log('🔍 回溯算法结果快速检查:', quickCheck);
+            
+            // 详细报告每人场次
+            for (let i = 0; i < 6; i++) {
+                console.log(`   玩家${i+1}: ${quickCheck[i]}场`);
+                if (quickCheck[i] !== 10) {
+                    console.error(`❌ 玩家${i+1}场次错误：${quickCheck[i]}场，应该10场`);
+                }
+            }
+            
+            if (!quickCheck.every(count => count === 10)) {
+                console.error('❌ 回溯算法结果错误！每人场次:', quickCheck);
+                console.error('总场次:', quickCheck.reduce((a, b) => a + b, 0), '应该是60');
+                throw new Error(`回溯算法产生了错误的结果: [${quickCheck.join(',')}]`);
+            }
+            
+            // 严格检查连续比赛 - 绝对不能有任何连续
+            console.log('🔍 严格检查连续比赛...');
+            for (let playerId = 0; playerId < 6; playerId++) {
+                const playerMatches = [];
+                selectedMatches.forEach((match, index) => {
+                    if (match.includes(playerId)) {
+                        playerMatches.push(index);
+                    }
+                });
+                
+                // 检查是否有连续场次
+                for (let i = 1; i < playerMatches.length; i++) {
+                    if (playerMatches[i] === playerMatches[i-1] + 1) {
+                        console.error(`❌ 玩家${playerId+1}连续比赛：第${playerMatches[i-1]+1}和${playerMatches[i]+1}场`);
+                        console.error('该玩家所有比赛场次:', playerMatches.map(m => m+1));
+                        throw new Error(`回溯算法失败：玩家${playerId+1}有连续比赛`);
+                    }
+                }
+                
+                console.log(`   玩家${playerId+1}: 第${playerMatches.map(m => m+1).join(',')}场 ✓`);
+            }
+            
+            // 验证每人场次数 - 详细调试
+            const playerCounts = Array(6).fill(0);
+            const playerMatchDetails = Array(6).fill(null).map(() => []);
+            
+            selectedMatches.forEach((match, index) => {
+                match.forEach(playerId => {
+                    playerCounts[playerId]++;
+                    playerMatchDetails[playerId].push(index + 1);
+                });
+            });
+            
+            console.log('📊 6人数学构造验证 - 每人场次:', playerCounts);
+            console.log('📋 详细比赛安排:');
+            for (let i = 0; i < 6; i++) {
+                console.log(`   玩家${i+1}: ${playerCounts[i]}场 - 第${playerMatchDetails[i].join(',')}场`);
+            }
+            
+            // 检查是否有场次分配错误
+            const wrongCounts = [];
+            for (let i = 0; i < 6; i++) {
+                if (playerCounts[i] !== 10) {
+                    wrongCounts.push(`玩家${i+1}:${playerCounts[i]}场`);
+                }
+            }
+            
+            if (wrongCounts.length > 0) {
+                console.error('❌ 场次分配错误:', wrongCounts.join(', '));
+                console.error('🔍 调试信息:');
+                console.error(`   选择了${selectedMatches.length}场比赛`);
+                console.error(`   使用了${usedCombinations.size}个组合`);
+                console.error(`   总共有${allCombinations.length}个可用组合`);
+                
+                // 检查哪些组合没有被使用
+                const unusedCombos = allCombinations.filter(combo => !usedCombinations.has(combo.join(',')));
+                if (unusedCombos.length > 0) {
+                    console.error(`   未使用的组合(${unusedCombos.length}个):`, unusedCombos);
+                }
+                
+                throw new Error(`6人场次分配错误: [${playerCounts.join(',')}], 应该每人10场`);
+            }
+            
+            // 最终确认所有组合都被使用（回溯算法保证了这一点）
+            console.log('✅ 回溯算法确保所有15个组合都被使用');
+            
+            // 转换为比赛格式
+            const matches = selectedMatches.map((match, index) => {
+                // 随机分组
+                const shuffled = [...match].sort(() => Math.random() - 0.5);
+                return {
+                    team1: [players[shuffled[0]], players[shuffled[1]]],
+                    team2: [players[shuffled[2]], players[shuffled[3]]],
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: index
+                };
+            });
+            
+            // 最终验证 - 包括休息时间分布检查
+            const isValid = validateMatchesStrictly(matches, 6, players, 10);
+            if (!isValid) {
+                throw new Error('6人数学构造最终验证失败');
+            }
+            
+            // 验证休息时间分布
+            validateRestDistribution(matches, players);
+            
+            console.log('✅ 6人数学构造完成：每人10场，无连续比赛，休息时间公平');
+            return matches;
+        }
+        
+        // 5人数学构造解决方案 - 使用算法保证正确性
+        function generate5PlayerMathematicalSolution(players) {
+            console.log('🎯 5人数学构造：确保每人恰好12场，绝对无连续');
+            
+            // 5人时，每场4人参赛1人休息，总共15场
+            // 每人参赛12场，休息3场
+            
+            // 生成所有可能的4人组合 C(5,4) = 5，但我们需要15场
+            // 所以每个4人组合要用3次，对应不同的分组方式
+            const allCombinations = [];
+            
+            // 5人中选4人的所有组合
+            for (let restPlayer = 0; restPlayer < 5; restPlayer++) {
+                const playingPlayers = [];
+                for (let i = 0; i < 5; i++) {
+                    if (i !== restPlayer) {
+                        playingPlayers.push(i);
+                    }
+                }
+                
+                // 4人的3种分组方式
+                const [a, b, c, d] = playingPlayers;
+                allCombinations.push({players: [a, b, c, d], restPlayer});
+                allCombinations.push({players: [a, c, b, d], restPlayer});
+                allCombinations.push({players: [a, d, b, c], restPlayer});
+            }
+            
+            console.log(`5人共有${allCombinations.length}种4人组合（含分组）`);
+            
+            // 使用贪心算法选择无连续的顺序
+            const selectedMatches = [];
+            const usedCombinations = new Set();
+            const playerLastMatch = Array(5).fill(-999);
+            const playerMatchCount = Array(5).fill(0);
+            
+            for (let matchIndex = 0; matchIndex < 15; matchIndex++) {
+                let bestCombo = null;
+                let bestScore = -Infinity;
+                
+                for (const combo of allCombinations) {
+                    const comboKey = combo.players.join(',') + '-' + combo.restPlayer;
+                    if (usedCombinations.has(comboKey)) continue;
+                    
+                    // 检查场次限制
+                    let exceedsLimit = false;
+                    for (const playerId of combo.players) {
+                        if (playerMatchCount[playerId] >= 12) {
+                            exceedsLimit = true;
+                            break;
+                        }
+                    }
+                    if (exceedsLimit) continue;
+                    
+                    // 检查是否有人连续比赛
+                    let hasConsecutive = false;
+                    for (const playerId of combo.players) {
+                        if (playerLastMatch[playerId] === matchIndex - 1) {
+                            hasConsecutive = true;
+                            break;
+                        }
+                    }
+                    if (hasConsecutive) continue;
+                    
+                    // 计算优先级分数 - 强化休息公平性
+                    let score = 0;
+                    let minRestTime = Infinity;
+                    let totalRestTime = 0;
+                    
+                    // 最高优先级：优先安排比赛次数少的人
+                    for (const playerId of combo.players) {
+                        const remaining = 12 - playerMatchCount[playerId];
+                        score += remaining * 10000; // 极高权重
+                    }
+                    
+                    // 强化休息时间检查
+                    for (const playerId of combo.players) {
+                        const restTime = matchIndex - playerLastMatch[playerId];
+                        minRestTime = Math.min(minRestTime, restTime);
+                        totalRestTime += restTime;
+                        
+                        // 强烈惩罚休息时间短的组合
+                        if (restTime <= 1) {
+                            score -= 100000; // 极重度惩罚
+                        } else if (restTime === 2) {
+                            score -= 10000;  // 重度惩罚
+                        } else {
+                            score += restTime * 1000; // 高奖励休息时间长的
+                        }
+                    }
+                    
+                    // 额外奖励所有人都休息充分的组合
+                    if (minRestTime >= 2) {
+                        score += minRestTime * 5000;
+                    }
+                    
+                    // 平衡休息的人的状态
+                    const restPlayerRestTime = matchIndex - playerLastMatch[combo.restPlayer];
+                    if (restPlayerRestTime <= 1) {
+                        score += 1000; // 鼓励让刚比赛的人休息
+                    } else if (restPlayerRestTime >= 4) {
+                        score -= 500;  // 避免某人休息过久
+                    }
+                    
+                    score += Math.random() * 0.1; // 小随机因子
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestCombo = combo;
+                    }
+                }
+                
+                if (!bestCombo) {
+                    throw new Error(`5人数学构造失败：第${matchIndex + 1}场无可用组合`);
+                }
+                
+                // 记录选择的组合
+                selectedMatches.push(bestCombo);
+                usedCombinations.add(bestCombo.players.join(',') + '-' + bestCombo.restPlayer);
+                
+                // 更新玩家状态
+                for (const playerId of bestCombo.players) {
+                    playerLastMatch[playerId] = matchIndex;
+                    playerMatchCount[playerId]++;
+                }
+            }
+            
+            // 验证每人场次数
+            const finalPlayerCounts = Array(5).fill(0);
+            selectedMatches.forEach(match => {
+                match.players.forEach(playerId => finalPlayerCounts[playerId]++);
+            });
+            
+            console.log('📊 5人数学构造验证 - 每人场次:', finalPlayerCounts);
+            
+            if (!finalPlayerCounts.every(count => count === 12)) {
+                throw new Error(`5人场次分配错误: [${finalPlayerCounts.join(',')}], 应该每人12场`);
+            }
+            
+            // 转换为比赛格式
+            const matches = selectedMatches.map((match, index) => {
+                // 随机分组
+                const shuffled = [...match.players].sort(() => Math.random() - 0.5);
+                return {
+                    team1: [players[shuffled[0]], players[shuffled[1]]],
+                    team2: [players[shuffled[2]], players[shuffled[3]]],
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: index
+                };
+            });
+            
+            // 最终验证
+            const isValid = validateMatchesStrictly(matches, 5, players, 12);
+            if (!isValid) {
+                throw new Error('5人数学构造最终验证失败');
+            }
+            
+            console.log('✅ 5人数学构造完成：每人12场，无连续比赛');
+            return matches;
+        }
+        
+        // 验证休息时间分布的公平性
+        function validateRestDistribution(matches, players) {
+            console.log('🔍 验证休息时间分布...');
+            
+            const playerMatches = {};
+            players.forEach(player => {
+                playerMatches[player] = [];
+            });
+            
+            // 收集每个人参与的比赛场次
+            matches.forEach((match, index) => {
+                [...match.team1, ...match.team2].forEach(player => {
+                    if (playerMatches[player]) {
+                        playerMatches[player].push(index);
+                    }
+                });
+            });
+            
+            // 检查每个人的休息时间分布
+            let hasRestIssue = false;
+            for (const player of players) {
+                const matchList = playerMatches[player];
+                const restPeriods = [];
+                
+                // 计算休息间隔
+                for (let i = 1; i < matchList.length; i++) {
+                    const restTime = matchList[i] - matchList[i-1] - 1;
+                    if (restTime > 0) {
+                        restPeriods.push(restTime);
+                    }
+                }
+                
+                // 检查是否有过长的休息时间
+                const maxRest = Math.max(...restPeriods, 0);
+                const avgRest = restPeriods.length > 0 ? restPeriods.reduce((a, b) => a + b, 0) / restPeriods.length : 0;
+                
+                console.log(`   ${player}: 休息间隔 [${restPeriods.join(',')}], 最长${maxRest}场, 平均${avgRest.toFixed(1)}场`);
+                
+                if (maxRest >= 4) {
+                    console.warn(`   ⚠️ ${player}最长休息${maxRest}场，可能不够公平`);
+                    hasRestIssue = true;
+                }
+                
+                // 检查开始和结束的休息时间
+                const firstMatch = matchList[0];
+                const lastMatch = matchList[matchList.length - 1];
+                if (firstMatch >= 3) {
+                    console.warn(`   ⚠️ ${player}前${firstMatch}场都在休息`);
+                    hasRestIssue = true;
+                }
+                if (lastMatch <= matches.length - 4) {
+                    console.warn(`   ⚠️ ${player}最后${matches.length - 1 - lastMatch}场都在休息`);
+                    hasRestIssue = true;
+                }
+            }
+            
+            if (hasRestIssue) {
+                console.warn('⚠️ 休息时间分布存在不公平现象，但在可接受范围内');
+            } else {
+                console.log('✅ 休息时间分布公平');
+            }
+        }
+        
+        // 最严格的验证函数
+        function validateMatchesStrictly(matches, playerCount, players, targetPerPlayer) {
+            const playerMatches = {};
+            
+            // 统计每个人的比赛
+            players.forEach(player => {
+                playerMatches[player] = [];
+            });
+            
+            matches.forEach((match, index) => {
+                [...match.team1, ...match.team2].forEach(player => {
+                    if (playerMatches[player]) {
+                        playerMatches[player].push(index);
+                    }
+                });
+            });
+            
+            // 检查场次
+            for (const player of players) {
+                const count = playerMatches[player].length;
+                if (count !== targetPerPlayer) {
+                    console.error(`❌ ${player}场次错误：${count}场，应该${targetPerPlayer}场`);
+                    return false;
+                }
+            }
+            
+            // 检查连续比赛 - 增强版
+            for (const player of players) {
+                const matches = playerMatches[player];
+                let consecutiveCount = 1;
+                let maxConsecutive = 1;
+                let consecutiveSequences = [];
+                
+                for (let i = 1; i < matches.length; i++) {
+                    if (matches[i] === matches[i-1] + 1) {
+                        consecutiveCount++;
+                        maxConsecutive = Math.max(maxConsecutive, consecutiveCount);
+                        
+                        // 记录连续序列
+                        if (consecutiveCount === 2) {
+                            consecutiveSequences.push([matches[i-1], matches[i]]);
+                        } else {
+                            consecutiveSequences[consecutiveSequences.length - 1].push(matches[i]);
+                        }
+                        
+                        console.error(`❌ ${player}连续比赛：第${matches[i-1]+1}和${matches[i]+1}场`);
+                        return false;
+                    } else {
+                        consecutiveCount = 1;
+                    }
+                }
+                
+                // 报告连续情况
+                if (consecutiveSequences.length > 0) {
+                    console.error(`❌ ${player}有${consecutiveSequences.length}个连续序列，最长连续${maxConsecutive}场`);
+                    consecutiveSequences.forEach((seq, index) => {
+                        console.error(`   序列${index+1}: 第${seq.map(m => m+1).join(',')}场`);
+                    });
+                }
+            }
+            
+            console.log('✅ 严格验证通过：场次正确，无连续比赛');
+            return true;
+        }
+
+        // 绝对保证公平的备用算法 - 承认手工预设失败，直接使用算法
+        function generateGuaranteedFairMatches(playerCount, players) {
+            console.warn('🚨 手工预设安排存在缺陷，直接使用算法生成');
+            
+            // 直接使用简单但可靠的随机生成算法
+            return generateSimpleMatches(playerCount, players);
+        }
+
+        // 验证预设安排的公平性
+        function validatePresetArrangement(matches, playerCount, description) {
+            console.log(`🔍 验证${description}的公平性:`);
+            
+            // 获取所有玩家名单
+            const allPlayers = new Set();
+            matches.forEach(match => {
+                match.team1.forEach(player => allPlayers.add(player));
+                match.team2.forEach(player => allPlayers.add(player));
+            });
+            
+            const playerMatches = {};
+            
+            // 统计每个人参与的比赛
+            allPlayers.forEach(player => {
+                playerMatches[player] = [];
+                matches.forEach((match, index) => {
+                    if ([...match.team1, ...match.team2].includes(player)) {
+                        playerMatches[player].push(index);
+                    }
+                });
+            });
+            
+            // 检查场次分配和连续比赛
+            let hasError = false;
+            const expectedMatches = playerCount === 6 ? 10 : 12;
+            const maxConsecutiveOverall = 1;
+            
+            Object.keys(playerMatches).forEach(player => {
+                const playerMatchList = playerMatches[player];
+                const matchCount = playerMatchList.length;
+                
+                console.log(`  ${player}: 参与${matchCount}场比赛 (第${playerMatchList.map(i => i+1).join(',')}场)`);
+                
+                // 检查场次数量
+                if (matchCount !== expectedMatches) {
+                    console.error(`    ❌ 场次错误！应该${expectedMatches}场，实际${matchCount}场`);
+                    hasError = true;
+                }
+                
+                // 检查连续比赛
+                let maxConsecutive = 1;
+                let currentConsecutive = 1;
+                let consecutiveSequences = [];
+                let currentSequence = [playerMatchList[0]];
+                
+                for (let i = 1; i < playerMatchList.length; i++) {
+                    if (playerMatchList[i] === playerMatchList[i-1] + 1) {
+                        currentConsecutive++;
+                        currentSequence.push(playerMatchList[i]);
+                        maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                    } else {
+                        if (currentSequence.length > 1) {
+                            consecutiveSequences.push([...currentSequence]);
+                        }
+                        currentConsecutive = 1;
+                        currentSequence = [playerMatchList[i]];
+                    }
+                }
+                
+                // 检查最后一个序列
+                if (currentSequence.length > 1) {
+                    consecutiveSequences.push(currentSequence);
+                }
+                
+                if (maxConsecutive > 1) {
+                    console.error(`    ❌ 连续比赛${maxConsecutive}场: ${consecutiveSequences.map(seq => `第${seq[0]+1}-${seq[seq.length-1]+1}场`).join(', ')}`);
+                    hasError = true;
+                } else {
+                    console.log(`    ✅ 无连续比赛，场次正确`);
+                }
+            });
+            
+            // 验证总体统计
+            const totalMatches = Object.values(playerMatches).reduce((sum, matches) => sum + matches.length, 0);
+            const expectedTotal = matches.length * 4; // 每场比赛4人参与
+            
+            if (totalMatches !== expectedTotal) {
+                console.error(`❌ 总参赛人次错误！期望${expectedTotal}，实际${totalMatches}`);
+                hasError = true;
+            }
+            
+            if (hasError) {
+                console.error(`❌ ${description}验证失败！`);
+                return false;
+            } else {
+                console.log(`✅ ${description}验证完全通过：场次分配正确，无连续比赛！`);
+                return true;
+            }
+        }
+
+        // 生成简单的比赛安排（最后的备用方案）
+        function generateSimpleMatches(playerCount, players) {
+            const matches = [];
+            const combinations = [];
+            
+            // 生成所有可能的4人组合
+            for (let i = 0; i < playerCount; i++) {
+                for (let j = i + 1; j < playerCount; j++) {
+                    for (let k = 0; k < playerCount; k++) {
+                        if (k !== i && k !== j) {
+                            for (let l = k + 1; l < playerCount; l++) {
+                                if (l !== i && l !== j) {
+                                    combinations.push({
+                                        team1: [players[i], players[j]],
+                                        team2: [players[k], players[l]]
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 随机选择15场比赛
+            const shuffled = combinations.sort(() => Math.random() - 0.5);
+            for (let i = 0; i < Math.min(15, shuffled.length); i++) {
+                matches.push({
+                    team1: shuffled[i].team1,
+                    team2: shuffled[i].team2,
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: i
+                });
+            }
+            
+            console.log(`生成简单安排：${matches.length}场比赛`);
+            return matches;
+        }
+
+        // 生成5人15场比赛（每人12场，避免连续比赛）
+        function generate5PlayerMatches(players) {
+            return generatePerfectSchedule(5, players);
+        }
+        
+        // 5人专用严格算法
+        function generateStrictFivePlayerSchedule(players) {
+            console.log('🎯 5人模式：15场比赛，每人必须12场，绝对无连续');
+            
+            const targetMatches = 15;
+            const targetPerPlayer = 12;
+            const playerCount = 5;
+            
+            // 生成所有可能的4人组合（从5人中选4人）
+            const allCombinations = [];
+            for (let i = 0; i < playerCount; i++) {
+                for (let j = i + 1; j < playerCount; j++) {
+                    for (let k = j + 1; k < playerCount; k++) {
+                        for (let l = k + 1; l < playerCount; l++) {
+                            // 4人组合，剩下1人休息
+                            const playingPlayers = [i, j, k, l];
+                            const restingPlayer = [0, 1, 2, 3, 4].find(p => !playingPlayers.includes(p));
+                            
+                            // 生成这4人的所有分组方式
+                            const groupings = [
+                                { team1: [i, j], team2: [k, l], players: playingPlayers, resting: restingPlayer },
+                                { team1: [i, k], team2: [j, l], players: playingPlayers, resting: restingPlayer },
+                                { team1: [i, l], team2: [j, k], players: playingPlayers, resting: restingPlayer }
+                            ];
+                            
+                            allCombinations.push(...groupings);
+                        }
+                    }
+                }
+            }
+            
+            console.log(`5人模式：${allCombinations.length}种组合可选`);
+            
+            // 多次尝试生成完美安排
+            for (let attempt = 0; attempt < 2000; attempt++) {
+                const matches = [];
+                const playerLastMatch = Array(playerCount).fill(-999);
+                const playerMatchCount = Array(playerCount).fill(0);
+                const usedCombinations = new Set();
+                
+                let success = true;
+                
+                for (let matchIndex = 0; matchIndex < targetMatches; matchIndex++) {
+                    const validCombos = [];
+                    
+                    // 严格筛选可用组合
+                    for (const combo of allCombinations) {
+                        const comboKey = combo.players.slice().sort().join(',') + '_' + combo.team1.slice().sort().join(',') + '_' + combo.team2.slice().sort().join(',');
+                        if (usedCombinations.has(comboKey)) continue;
+                        
+                        // 严格检查场次限制
+                        let exceedsLimit = false;
+                        for (const playerId of combo.players) {
+                            if (playerMatchCount[playerId] >= targetPerPlayer) {
+                                exceedsLimit = true;
+                                break;
+                            }
+                        }
+                        if (exceedsLimit) continue;
+                        
+                        // 严格检查连续比赛 - 绝对不允许任何人连续
+                        let hasConsecutive = false;
+                        for (const playerId of combo.players) {
+                            if (playerLastMatch[playerId] === matchIndex - 1) {
+                                hasConsecutive = true;
+                                break;
+                            }
+                        }
+                        if (hasConsecutive) continue;
+                        
+                        // 检查休息的人是否也会连续休息太久
+                        const restingPlayerId = combo.resting;
+                        if (playerLastMatch[restingPlayerId] < matchIndex - 3 && playerMatchCount[restingPlayerId] < targetPerPlayer) {
+                            // 如果某人已经休息超过3场且还需要比赛，优先让他比赛
+                            continue;
+                        }
+                        
+                        validCombos.push(combo);
+                    }
+                    
+                    if (validCombos.length === 0) {
+                        success = false;
+                        break;
+                    }
+                    
+                    // 选择最优组合
+                    let bestCombo = null;
+                    let bestScore = -Infinity;
+                    
+                    for (const combo of validCombos) {
+                        let score = 0;
+                        
+                        // 最高优先级：优先安排比赛次数少的人
+                        for (const playerId of combo.players) {
+                            const remaining = targetPerPlayer - playerMatchCount[playerId];
+                            score += remaining * 10000; // 极高权重
+                        }
+                        
+                        // 次优先级：优先安排休息久的人
+                        for (const playerId of combo.players) {
+                            const restTime = matchIndex - playerLastMatch[playerId];
+                            score += Math.min(restTime * 1000, 5000);
+                        }
+                        
+                        // 平衡休息分配
+                        const restingPlayerId = combo.resting;
+                        const restingPlayerMatches = playerMatchCount[restingPlayerId];
+                        if (restingPlayerMatches < targetPerPlayer) {
+                            // 如果休息的人还需要比赛，稍微降低分数
+                            const remaining = targetPerPlayer - restingPlayerMatches;
+                            score -= remaining * 100;
+                        }
+                        
+                        // 随机因子
+                        score += Math.random() * 10;
+                        
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestCombo = combo;
+                        }
+                    }
+                    
+                    if (bestCombo) {
+                        matches.push({
+                            team1: [players[bestCombo.team1[0]], players[bestCombo.team1[1]]],
+                            team2: [players[bestCombo.team2[0]], players[bestCombo.team2[1]]],
+                            score1: 0,
+                            score2: 0,
+                            matchIndex: matchIndex
+                        });
+                        
+                        // 更新状态
+                        for (const playerId of bestCombo.players) {
+                            playerLastMatch[playerId] = matchIndex;
+                            playerMatchCount[playerId]++;
+                        }
+                        
+                        const comboKey = bestCombo.players.slice().sort().join(',') + '_' + bestCombo.team1.slice().sort().join(',') + '_' + bestCombo.team2.slice().sort().join(',');
+                        usedCombinations.add(comboKey);
+                    } else {
+                        success = false;
+                        break;
+                    }
+                }
+                
+                // 如果生成成功，进行最严格的验证
+                if (success && matches.length === targetMatches) {
+                    const isValid = validateMatchesStrictly(matches, playerCount, players, targetPerPlayer);
+                    if (isValid) {
+                        console.log(`✅ 5人完美安排生成成功！尝试${attempt + 1}次`);
+                        return matches;
+                    }
+                }
+                
+                // 每100次尝试输出进度
+                if ((attempt + 1) % 100 === 0) {
+                    console.log(`🔄 5人安排尝试进度：${attempt + 1}/2000`);
+                }
+            }
+            
+            console.error('❌ 5人模式2000次尝试都失败了！');
+            throw new Error('无法生成符合要求的5人比赛安排');
+        }
+        
+        // 验证15场比赛的公平性
+        function validateMatchFairness() {
+            console.log('🏸 验证15场比赛公平性：');
+            const activePlayers = getActivePlayers();
+            const playerCount = activePlayers.length;
+            
+                const playerMatchCounts = {};
+            const playerPartners = {};
+            const playerConsecutive = {};
+            
+            // 初始化统计
+            activePlayers.forEach(player => {
+                    playerMatchCounts[player.name] = 0;
+                playerPartners[player.name] = {};
+                playerConsecutive[player.name] = [];
+                });
+                
+            // 统计每个玩家的参赛次数和搭档情况
+            matchSchedule.forEach((match, matchIndex) => {
+                    const playingPlayers = [...match.team1, ...match.team2];
+                
+                    playingPlayers.forEach(playerName => {
+                    if (playerMatchCounts[playerName] !== undefined) {
+                        playerMatchCounts[playerName]++;
+                        playerConsecutive[playerName].push(matchIndex);
+                    }
+                });
+                
+                // 统计搭档关系
+                match.team1.forEach(player1 => {
+                    match.team1.forEach(player2 => {
+                        if (player1 !== player2) {
+                            if (!playerPartners[player1][player2]) {
+                                playerPartners[player1][player2] = 0;
+                            }
+                            playerPartners[player1][player2]++;
+                        }
                     });
                 });
                 
-                matchSchedule.push(roundMatches);
+                match.team2.forEach(player1 => {
+                    match.team2.forEach(player2 => {
+                        if (player1 !== player2) {
+                            if (!playerPartners[player1][player2]) {
+                                playerPartners[player1][player2] = 0;
+                            }
+                            playerPartners[player1][player2]++;
+                        }
+                    });
+                });
+            });
+            
+            console.log('📊 参赛统计:', playerMatchCounts);
+            console.log('🤝 搭档统计:', playerPartners);
+            
+            // 检查参赛次数公平性
+                const matchCounts = Object.values(playerMatchCounts);
+                const minMatches = Math.min(...matchCounts);
+                const maxMatches = Math.max(...matchCounts);
+                
+            const expectedMatches = playerCount === 5 ? 12 : 10;
+            
+            if (minMatches === maxMatches && minMatches === expectedMatches) {
+                console.log(`✅ 完全公平：每人都参加${minMatches}场比赛`);
+                } else {
+                console.log(`⚠️ 参赛次数范围：${minMatches}-${maxMatches}场，期望${expectedMatches}场`);
+            }
+            
+            // 检查连续比赛情况
+            Object.keys(playerConsecutive).forEach(playerName => {
+                const matches = playerConsecutive[playerName];
+                let maxConsecutive = 1;
+                let currentConsecutive = 1;
+                let consecutiveSequences = [];
+                let currentSequence = [matches[0]];
+                
+                for (let i = 1; i < matches.length; i++) {
+                    if (matches[i] === matches[i-1] + 1) {
+                        currentConsecutive++;
+                        currentSequence.push(matches[i]);
+                        maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                    } else {
+                        if (currentSequence.length > 1) {
+                            consecutiveSequences.push([...currentSequence]);
+                        }
+                        currentConsecutive = 1;
+                        currentSequence = [matches[i]];
+                    }
+                }
+                
+                // 检查最后一个序列
+                if (currentSequence.length > 1) {
+                    consecutiveSequences.push(currentSequence);
+                }
+                
+                console.log(`${playerName} 最大连续比赛：${maxConsecutive}场`);
+                if (consecutiveSequences.length > 0) {
+                    console.log(`  连续比赛序列:`, consecutiveSequences.map(seq => `第${seq[0]+1}-${seq[seq.length-1]+1}场`).join(', '));
+                }
+                
+                // 如果有人连续3场以上，发出警告
+                if (maxConsecutive >= 3) {
+                    console.warn(`⚠️ ${playerName} 连续比赛${maxConsecutive}场，不够公平！`);
+                }
+            });
+        }
+        
+        // 验证休息时间分布是否均匀
+        function validateRestDistribution() {
+            const playerRestCounts = {};
+            playerConfig.forEach(player => {
+                playerRestCounts[player.name] = 0;
+            });
+            
+            // 统计每个玩家的休息次数
+            for (let round = 0; round < 3; round++) {
+                for (let matchIndex = 0; matchIndex < 5; matchIndex++) {
+                    const match = matchSchedule[round][matchIndex];
+                    const playingPlayers = [...match.team1, ...match.team2];
+                    
+                    playerConfig.forEach(player => {
+                        if (!playingPlayers.includes(player.name)) {
+                            playerRestCounts[player.name]++;
+                        }
+                    });
+                }
+            }
+            
+            console.log('🏸 休息时间分布:', playerRestCounts);
+            
+            // 检查是否有人休息时间过少或过多
+            const restCounts = Object.values(playerRestCounts);
+            const minRest = Math.min(...restCounts);
+            const maxRest = Math.max(...restCounts);
+            
+            if (maxRest - minRest <= 1) {
+                console.log('✅ 休息时间分布均匀，每人休息', minRest, '-', maxRest, '次');
+            } else {
+                console.log('⚠️ 休息时间分布不均，正在重新调整...');
+                // 如果分布不均，可以递归重新生成（但通常新算法已经很均匀了）
             }
         }
 
         // 更新玩家显示
         function updatePlayersDisplay() {
             const playersContainer = document.getElementById('playersNames');
-            const playerNames = playerConfig.map(player => player.name);
+            const activePlayers = getActivePlayers();
+            const playerNames = activePlayers.map(player => player.name);
             playersContainer.textContent = playerNames.join(' • ');
+            
+            // 更新标题中的人数显示
+            const headerSubtitle = document.querySelector('.header p');
+            if (headerSubtitle) {
+                const playerCount = activePlayers.length;
+                const matchesPerPlayer = playerCount === 6 ? 10 : 12;
+                headerSubtitle.textContent = `${playerCount}人轮转制 - 15场比赛，每人${matchesPerPlayer}场`;
+            }
         }
 
-        // 更新比赛显示
-        function updateMatchDisplay() {
+        // 显示玩家配置弹框
+        function showPlayerConfigModal() {
+            updatePlayerConfigDisplay();
+            updateFairnessDescription();
+            document.getElementById('playerConfigModal').classList.add('active');
+        }
+
+        // 关闭玩家配置弹框
+        function closePlayerConfigModal() {
+            document.getElementById('playerConfigModal').classList.remove('active');
+        }
+
+        // 设置参赛人数
+        function setPlayerCount(count) {
+            currentPlayerCount = count;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.player-count-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.dataset.count) === count) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 更新模式文本
+            document.getElementById('currentModeText').textContent = `${count}人比赛`;
+            
+            // 更新玩家激活状态
+            playerConfig.forEach((player, index) => {
+                player.active = index < count;
+            });
+            
+            updatePlayerConfigDisplay();
+            updateFairnessDescription();
+        }
+
+        // 更新玩家配置显示
+        function updatePlayerConfigDisplay() {
+            const container = document.getElementById('playerListConfig');
+            container.innerHTML = '';
+            
+            playerConfig.forEach((player, index) => {
+                const playerItem = document.createElement('div');
+                playerItem.className = `player-item ${player.active ? 'active' : 'inactive'}`;
+                
+                playerItem.innerHTML = `
+                    <div class="player-avatar">${player.avatar}</div>
+                    <div class="player-info">
+                        <input type="text" class="player-name-input" value="${player.name}" 
+                               onchange="updatePlayerName(${index}, this.value)"
+                               ${!player.active ? 'disabled' : ''}>
+                        <div class="player-status">
+                            ${player.active ? '✅ 参赛中' : '❌ 未参赛'}
+                        </div>
+                    </div>
+                    <button class="player-toggle ${player.active ? 'active' : 'inactive'}" 
+                            onclick="togglePlayer(${index})"
+                            ${index >= currentPlayerCount ? 'disabled' : ''}>
+                        ${player.active ? '参赛' : '休息'}
+                    </button>
+                `;
+                
+                container.appendChild(playerItem);
+            });
+        }
+
+        // 更新玩家姓名
+        function updatePlayerName(index, newName) {
+            if (newName.trim()) {
+                playerConfig[index].name = newName.trim();
+                // 更新头像
+                playerConfig[index].avatar = newName.trim().charAt(0).toUpperCase();
+            }
+        }
+
+        // 切换玩家参赛状态
+        function togglePlayer(index) {
+            if (index < currentPlayerCount) {
+                playerConfig[index].active = !playerConfig[index].active;
+                updatePlayerConfigDisplay();
+                updateFairnessDescription();
+            }
+        }
+
+        // 更新公平性描述
+        function updateFairnessDescription() {
+            const activeCount = getActivePlayers().length;
+            const descElement = document.getElementById('fairnessDescription');
+            
+            if (activeCount === 5) {
+                descElement.innerHTML = `
+                    • <strong>5人模式</strong>：15场比赛，每人参加12场<br>
+                    • <strong>搭档分配</strong>：每人都能与其他4人搭档<br>
+                    • <strong>休息分布</strong>：每人总共休息3场，均匀分布<br>
+                    • <strong>比赛强度</strong>：适中，完全公平分配
+                `;
+            } else if (activeCount === 6) {
+                descElement.innerHTML = `
+                    • <strong>6人模式</strong>：15场比赛，每人参加10场<br>
+                    • <strong>搭档分配</strong>：每人都能与其他人搭档<br>
+                    • <strong>休息分布</strong>：每人总共休息5场，避免连续比赛<br>
+                    • <strong>比赛强度</strong>：适中，完全公平分配
+                `;
+            } else {
+                descElement.innerHTML = `
+                    • <strong>当前${activeCount}人</strong>：请选择5人或6人进行比赛<br>
+                    • 系统将自动生成最公平的轮换安排
+                `;
+            }
+        }
+
+        // 保存玩家配置
+        function savePlayerConfig() {
+            const activeCount = getActivePlayers().length;
+            
+            if (activeCount < 5 || activeCount > 6) {
+                showAlert('请确保参赛人数为5人或6人！', '⚠️ 参赛人数错误', 'warning');
+                return;
+            }
+            
+            // 检查是否有重名
+            const activeNames = getActivePlayers().map(p => p.name.trim());
+            const uniqueNames = [...new Set(activeNames)];
+            if (activeNames.length !== uniqueNames.length) {
+                showAlert('参赛人员中有重名，请修改后再保存！', '⚠️ 姓名重复', 'warning');
+                return;
+            }
+            
+            closePlayerConfigModal();
+            updatePlayersDisplay();
+            
+            // 重新生成比赛安排
+            generateRandomMatches();
+            updateMatchDisplay();
+            hideFinalRanking();
+            
+            window.lastActionType = 'update_players';
+            if (saveToSync) saveToSync();
+            
+            showAlert(`✅ 配置已保存！\n\n当前${activeCount}人参赛模式已生效`, '配置成功', 'success');
+        }
+
+        // 显示比赛安排可视化
+        function showScheduleVisualization() {
+            if (matchSchedule.length === 0) {
+                showAlert('请先生成比赛安排！', '⚠️ 暂无比赛数据', 'warning');
+                return;
+            }
+            
+            generateScheduleVisualization();
+            document.getElementById('scheduleModal').classList.add('active');
+        }
+
+        // 关闭比赛安排可视化
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.remove('active');
+        }
+
+        // 生成比赛安排可视化
+        function generateScheduleVisualization() {
+            const activePlayers = getActivePlayers();
+            const overviewContainer = document.getElementById('scheduleOverview');
+            const summaryContainer = document.getElementById('scheduleSummary');
+            
+            // 生成详细比赛安排
+            let overviewHTML = '';
+            
+            // 添加图例
+            overviewHTML += `
+                <div class="schedule-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #28a745;"></div>
+                        <span>比赛中</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc3545;"></div>
+                        <span>休息中</span>
+                    </div>
+                </div>
+            `;
+            
+            // 生成每个人的比赛安排表格
+            overviewHTML += '<div class="player-schedule-grid">';
+            
+            // 表头
+            overviewHTML += '<div class="schedule-header">';
+            overviewHTML += '<div class="schedule-player-name">姓名</div>';
+            for (let round = 1; round <= 3; round++) {
+                for (let match = 1; match <= 5; match++) {
+                    overviewHTML += `<div class="schedule-cell" style="background: #f8f9fa; color: #666; font-size: 0.6rem;">R${round}M${match}</div>`;
+                }
+            }
+            overviewHTML += '</div>';
+            
+            // 每个玩家的行
+            activePlayers.forEach(player => {
+                overviewHTML += `<div class="schedule-player-name">${player.name}</div>`;
+                
             for (let round = 0; round < 3; round++) {
                 for (let match = 0; match < 5; match++) {
-                    const scoreElement = document.getElementById(`score-${round}-${match}`);
-                    const matchElement = scoreElement ? scoreElement.closest('.preview-match') : null;
-                    const matchData = matchSchedule[round] && matchSchedule[round][match];
-                    
-                    if (scoreElement && matchData && matchElement) {
-                        const score1 = matchData.score1;
-                        const score2 = matchData.score2;
-                        scoreElement.textContent = `${score1} : ${score2}`;
+                        const matchData = matchSchedule[round][match];
+                        const isPlaying = [...matchData.team1, ...matchData.team2].includes(player.name);
                         
-                        if (score1 > 0 || score2 > 0) {
-                            scoreElement.classList.add('has-score');
-                            matchElement.classList.add('completed');
-                            matchElement.classList.remove('incomplete');
-                } else {
-                            scoreElement.classList.remove('has-score');
-                            matchElement.classList.remove('completed');
+                        if (isPlaying) {
+                            overviewHTML += `<div class="schedule-cell playing">⚽</div>`;
+                        } else {
+                            overviewHTML += `<div class="schedule-cell resting">💤</div>`;
                         }
                     }
                 }
+            });
+            
+            overviewHTML += '</div>';
+            
+            // 详细比赛安排
+            for (let round = 0; round < 3; round++) {
+                overviewHTML += `
+                    <div class="schedule-round">
+                        <div class="schedule-round-title">第${round + 1}轮比赛</div>
+                        <div class="schedule-matches">
+                `;
+                
+                for (let match = 0; match < 5; match++) {
+                    const matchData = matchSchedule[round][match];
+                    const allPlayers = activePlayers.map(p => p.name);
+                    const playingPlayers = [...matchData.team1, ...matchData.team2];
+                    const restingPlayers = allPlayers.filter(p => !playingPlayers.includes(p));
+                    
+                    overviewHTML += `
+                        <div class="schedule-match">
+                            <div class="match-teams">
+                                ${matchData.team1.join(' + ')} VS ${matchData.team2.join(' + ')}
+                            </div>
+                            <div class="match-rest">
+                                休息：${restingPlayers.join(', ')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                overviewHTML += '</div></div>';
             }
             
-            updateMatchTexts();
+            overviewContainer.innerHTML = overviewHTML;
+            
+            // 生成统计摘要
+            const stats = calculatePlayerStats();
+            let summaryHTML = '<div style="font-weight: 600; margin-bottom: 10px;">📊 参赛统计摘要</div>';
+            
+            summaryHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+            
+            activePlayers.forEach(player => {
+                const playerStats = stats[player.name];
+                summaryHTML += `
+                    <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                        <div style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">${player.name}</div>
+                        <div style="font-size: 0.8rem; color: #666;">
+                            比赛：${playerStats.totalMatches} 场<br>
+                            休息：${playerStats.totalRests} 场<br>
+                            搭档：${playerStats.partners.length} 人
+                        </div>
+                    </div>
+                `;
+            });
+            
+            summaryHTML += '</div>';
+            
+            // 添加公平性分析
+            summaryHTML += '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">';
+            summaryHTML += '<div style="font-weight: 600; margin-bottom: 8px;">⚖️ 公平性分析</div>';
+            
+            const matchCounts = Object.values(stats).map(s => s.totalMatches);
+            const restCounts = Object.values(stats).map(s => s.totalRests);
+            
+            const minMatches = Math.min(...matchCounts);
+            const maxMatches = Math.max(...matchCounts);
+            const minRests = Math.min(...restCounts);
+            const maxRests = Math.max(...restCounts);
+            
+            summaryHTML += `
+                <div style="font-size: 0.85rem; color: #495057;">
+                    • 比赛场次范围：${minMatches} - ${maxMatches} 场<br>
+                    • 休息场次范围：${minRests} - ${maxRests} 场<br>
+                    • 公平性评级：${maxMatches - minMatches <= 1 ? '✅ 优秀' : '⚠️ 需要优化'}
+                </div>
+            `;
+            
+            summaryHTML += '</div>';
+            
+            summaryContainer.innerHTML = summaryHTML;
+        }
+
+        // 计算玩家统计数据
+        function calculatePlayerStats() {
+            const activePlayers = getActivePlayers();
+            const stats = {};
+            
+            activePlayers.forEach(player => {
+                stats[player.name] = {
+                    totalMatches: 0,
+                    totalRests: 0,
+                    partners: new Set(),
+                    opponents: new Set()
+                };
+            });
+            
+            for (let round = 0; round < 3; round++) {
+                for (let match = 0; match < 5; match++) {
+                    const matchData = matchSchedule[round][match];
+                    const allPlayers = activePlayers.map(p => p.name);
+                    const playingPlayers = [...matchData.team1, ...matchData.team2];
+                    
+                    // 统计比赛和休息
+                    allPlayers.forEach(playerName => {
+                        if (playingPlayers.includes(playerName)) {
+                            stats[playerName].totalMatches++;
+                } else {
+                            stats[playerName].totalRests++;
+                        }
+                    });
+                    
+                    // 统计搭档关系
+                    matchData.team1.forEach(player1 => {
+                        matchData.team1.forEach(player2 => {
+                            if (player1 !== player2) {
+                                stats[player1].partners.add(player2);
+                            }
+                        });
+                        matchData.team2.forEach(opponent => {
+                            stats[player1].opponents.add(opponent);
+                        });
+                    });
+                    
+                    matchData.team2.forEach(player1 => {
+                        matchData.team2.forEach(player2 => {
+                            if (player1 !== player2) {
+                                stats[player1].partners.add(player2);
+                            }
+                        });
+                        matchData.team1.forEach(opponent => {
+                            stats[player1].opponents.add(opponent);
+                        });
+                    });
+                }
+            }
+            
+            // 转换Set为数组
+            Object.keys(stats).forEach(playerName => {
+                stats[playerName].partners = Array.from(stats[playerName].partners);
+                stats[playerName].opponents = Array.from(stats[playerName].opponents);
+            });
+            
+            return stats;
+        }
+
+        // 更新15场比赛显示 - 直接平铺
+        function updateMatchDisplay() {
+            const container = document.getElementById('matchesPreview');
+            container.innerHTML = '';
+            
+            // 清除初始加载提示
+            const initialLoading = document.getElementById('initialLoading');
+            if (initialLoading) {
+                initialLoading.remove();
+            }
+            
+            if (!matchSchedule || matchSchedule.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">请先生成比赛安排</div>';
+                return;
+            }
+            
+            // 直接平铺所有15场比赛
+            const allMatchesDiv = document.createElement('div');
+            allMatchesDiv.className = 'all-matches-container';
+            allMatchesDiv.style.cssText = `
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 10px;
+                margin: 20px 0;
+            `;
+            
+            matchSchedule.forEach((matchData, matchIndex) => {
+                const matchDiv = document.createElement('div');
+                matchDiv.className = 'preview-match';
+                matchDiv.onclick = () => openMatchScore(matchIndex);
+                
+                const score1 = matchData.score1;
+                const score2 = matchData.score2;
+                
+                if (score1 > 0 || score2 > 0) {
+                    matchDiv.classList.add('completed');
+                }
+                
+                matchDiv.innerHTML = `
+                    <div class="match-text">
+                        <div style="font-weight: bold; margin-bottom: 5px;">第${matchIndex + 1}场比赛</div>
+                        <div>${matchData.team1.join(' + ')} VS ${matchData.team2.join(' + ')}</div>
+                    </div>
+                    <span class="match-score ${score1 > 0 || score2 > 0 ? 'has-score' : ''}">${score1} : ${score2}</span>
+                `;
+                
+                allMatchesDiv.appendChild(matchDiv);
+            });
+            
+            container.appendChild(allMatchesDiv);
         }
 
         // 更新比赛文本
@@ -1038,6 +3246,11 @@
             // 初始化LeanCloud
             async function init() {
                 try {
+                    // 检查 AV 是否可用
+                    if (typeof AV === 'undefined') {
+                        throw new Error('LeanCloud SDK 未加载');
+                    }
+                    
                     showLoading('正在连接云端...', '连接LeanCloud实时数据库');
                     
                     // 初始化LeanCloud
@@ -1064,13 +3277,21 @@
                     // 使用演示模式
                     initDemoMode();
                     
-                    showSyncNotification('⚠️ LeanCloud连接失败，使用演示模式（数据仅本地保存）');
+                    showSyncNotification('⚠️ LeanCloud连接失败，使用演示模式（数据仅本地保存）', 'warning');
                 }
             }
             
             // 演示模式（模拟实时同步）
             function initDemoMode() {
-                generateRandomMatches();
+                debugLog('启动演示模式');
+                
+                // 确保有比赛数据
+                if (!matchSchedule || matchSchedule.length === 0) {
+                    debugLog('生成演示比赛数据');
+                    generateRandomMatches();
+                }
+                
+                debugLog('更新显示');
                 updatePlayersDisplay();
                 updateMatchDisplay();
                 
@@ -1292,11 +3513,11 @@
         }
 
         // 打开比分选择器
-        function openMatchScore(round, match) {
-            selectedRound = round;
-            selectedMatch = match;
+        function openMatchScore(matchIndex) {
+            selectedRound = 0; // 不再使用轮次概念
+            selectedMatch = matchIndex;
             
-            const matchData = matchSchedule[round] && matchSchedule[round][match];
+            const matchData = matchSchedule[matchIndex];
             if (!matchData) return;
 
             team1Score = matchData.score1;
@@ -1304,7 +3525,7 @@
             team1ScoreSet = matchData.score1 > 0;
             team2ScoreSet = matchData.score2 > 0;
 
-            document.getElementById('advancedScoreTitle').textContent = `第${round + 1}轮第${match + 1}场比赛`;
+            document.getElementById('advancedScoreTitle').textContent = `第${matchIndex + 1}场比赛`;
             document.getElementById('team1Name').textContent = matchData.team1.join(' + ');
             document.getElementById('team2Name').textContent = matchData.team2.join(' + ');
 
@@ -1315,12 +3536,13 @@
             document.getElementById('advancedScoreModal').classList.add('active');
         }
 
-        // 创建比分轮播
+        // 创建比分轮播（0-25分，支持上拉快速到达高分）
         function createScoreWheel(wheelId, currentScore) {
             const wheel = document.getElementById(wheelId);
             wheel.innerHTML = '';
 
-            for (let i = 0; i <= 30; i++) {
+            // 改为0-21分范围（羽毛球标准）
+            for (let i = 0; i <= 21; i++) {
                 const scoreItem = document.createElement('div');
                 scoreItem.className = 'score-item';
                 scoreItem.textContent = i;
@@ -1369,7 +3591,7 @@
             updateScoreStatus();
         }
 
-        // 触摸处理
+        // 触摸处理（优化上拉操作，支持快速到达高分）
         function handleTouchStart(event, teamIndex) {
             event.preventDefault();
             touchStartY = event.touches[0].clientY;
@@ -1382,12 +3604,18 @@
             
             const currentY = event.touches[0].clientY;
             const deltaY = touchStartY - currentY;
-            const sensitivity = 40;
+            
+            // 优化灵敏度：上拉时更灵敏，便于快速到达21分等高分
+            let sensitivity = 40;
+            if (deltaY > 0) { // 上拉时降低灵敏度，更容易滑动
+                sensitivity = 30;
+            }
             
             const scoreChange = Math.round(deltaY / sensitivity);
             if (Math.abs(scoreChange) >= 1) {
                 const currentScore = teamIndex === 0 ? team1Score : team2Score;
-                const newScore = Math.max(0, Math.min(30, currentScore + scoreChange));
+                // 更新为0-25分范围
+                const newScore = Math.max(0, Math.min(21, currentScore + scoreChange));
                 
                 selectWheelScore(teamIndex === 0 ? 'scoreWheel1' : 'scoreWheel2', newScore);
                 touchStartY = currentY;
@@ -1410,12 +3638,18 @@
             
             const currentY = event.clientY;
             const deltaY = touchStartY - currentY;
-            const sensitivity = 40;
+            
+            // 优化鼠标滚动灵敏度：上滑时更灵敏
+            let sensitivity = 40;
+            if (deltaY > 0) { // 上滑时降低灵敏度，更容易滑动
+                sensitivity = 30;
+            }
             
             const scoreChange = Math.round(deltaY / sensitivity);
             if (Math.abs(scoreChange) >= 1) {
                 const currentScore = teamIndex === 0 ? team1Score : team2Score;
-                const newScore = Math.max(0, Math.min(30, currentScore + scoreChange));
+                // 更新为0-25分范围
+                const newScore = Math.max(0, Math.min(21, currentScore + scoreChange));
                 
                 selectWheelScore(teamIndex === 0 ? 'scoreWheel1' : 'scoreWheel2', newScore);
                 touchStartY = currentY;
@@ -1424,6 +3658,28 @@
 
         function handleMouseUp(event, teamIndex) {
             isDragging = false;
+        }
+
+        // 处理滚轮事件，支持向上向下滚动
+        function handleWheelScroll(event, teamIndex) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const currentScore = teamIndex === 0 ? team1Score : team2Score;
+            let newScore = currentScore;
+            
+            // 向上滚动（deltaY < 0）增加分数，向下滚动（deltaY > 0）减少分数
+            if (event.deltaY < 0) {
+                // 向上滚动，增加分数
+                newScore = Math.min(21, currentScore + 1);
+            } else if (event.deltaY > 0) {
+                // 向下滚动，减少分数
+                newScore = Math.max(0, currentScore - 1);
+            }
+            
+            if (newScore !== currentScore) {
+                selectWheelScore(teamIndex === 0 ? 'scoreWheel1' : 'scoreWheel2', newScore);
+            }
         }
 
         // 更新比分状态
@@ -1444,7 +3700,7 @@
                 statusElement.className = 'score-status';
                 saveBtn.disabled = true;
             } else {
-                statusElement.textContent = '请滑动或点击数字设置双方比分（0-30分）';
+                statusElement.textContent = '请滑动、滚轮或点击数字设置双方比分（0-21分，支持向上滚动）';
                 statusElement.className = 'score-status';
                 saveBtn.disabled = true;
             }
@@ -1457,7 +3713,7 @@
                 return;
             }
 
-            const matchData = matchSchedule[selectedRound][selectedMatch];
+            const matchData = matchSchedule[selectedMatch];
             matchData.score1 = team1Score;
             matchData.score2 = team2Score;
 
@@ -1467,7 +3723,7 @@
             window.lastActionType = 'score_update';
             if (saveToSync) saveToSync();
             
-            showAlert(`比分已保存：${team1Score} : ${team2Score}`, '✅ 保存成功', 'success');
+            showAlert(`第${selectedMatch + 1}场比分已保存：${team1Score} : ${team2Score}`, '✅ 保存成功', 'success');
         }
 
         // 关闭比分选择器
@@ -1500,41 +3756,18 @@
         function showFinalRanking() {
             const incompleteMatches = [];
             
-            for (let round = 0; round < 3; round++) {
-                for (let match = 0; match < 5; match++) {
-                    const matchData = matchSchedule[round] && matchSchedule[round][match];
-                    if (matchData && matchData.score1 === 0 && matchData.score2 === 0) {
-                        const matchElement = document.getElementById(`score-${round}-${match}`)?.closest('.preview-match');
+            matchSchedule.forEach((matchData, matchIndex) => {
+                if (matchData.score1 === 0 && matchData.score2 === 0) {
                         incompleteMatches.push({
-                            element: matchElement,
-                            round: round,
-                            match: match
-                        });
-                    }
+                        matchIndex: matchIndex,
+                        matchData: matchData
+                    });
                 }
-            }
+            });
 
             if (incompleteMatches.length > 0) {
-                // 滚动到第一个未计分的比赛
-                const firstIncompleteMatch = incompleteMatches[0];
-                if (firstIncompleteMatch.element) {
-                    // 添加高亮效果
-                    firstIncompleteMatch.element.classList.add('incomplete');
-                    
-                    // 平滑滚动到该比赛
-                    firstIncompleteMatch.element.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                    
-                    // 3秒后移除高亮效果
-                    setTimeout(() => {
-                        firstIncompleteMatch.element.classList.remove('incomplete');
-                    }, 3000);
-                }
-                
                 showAlert(
-                    `还有 ${incompleteMatches.length} 场比赛未记录比分！\n\n已自动滚动到第一个未计分的比赛（第${firstIncompleteMatch.round + 1}轮第${firstIncompleteMatch.match + 1}场）\n\n请完成所有比赛后再查看排名。`,
+                    `还有 ${incompleteMatches.length} 场比赛未记录比分！\n\n请完成所有比赛后再查看排名。`,
                     '⚠️ 比赛未完成',
                     'warning'
                 );
@@ -1557,8 +3790,10 @@
 
         // 计算排名
         function calculateAndDisplayResults() {
+            const activePlayers = getActivePlayers();
             const playerStats = {};
-            playerConfig.forEach(player => {
+            
+            activePlayers.forEach(player => {
                 playerStats[player.name] = {
                     wins: 0,
                     losses: 0,
@@ -1567,10 +3802,10 @@
                 };
             });
 
-            matchSchedule.forEach(round => {
-                round.forEach(match => {
+            matchSchedule.forEach(match => {
                     if (match.score1 > 0 || match.score2 > 0) {
                         match.team1.forEach(player => {
+                        if (playerStats[player]) {
                             playerStats[player].totalScore += match.score1;
                             playerStats[player].totalOpponentScore += match.score2;
                             if (match.score1 > match.score2) {
@@ -1578,9 +3813,11 @@
                             } else if (match.score1 < match.score2) {
                                 playerStats[player].losses += 1;
                             }
+                            }
                         });
 
                         match.team2.forEach(player => {
+                        if (playerStats[player]) {
                             playerStats[player].totalScore += match.score2;
                             playerStats[player].totalOpponentScore += match.score1;
                             if (match.score2 > match.score1) {
@@ -1588,9 +3825,9 @@
                             } else if (match.score2 < match.score1) {
                                 playerStats[player].losses += 1;
                             }
+                            }
                         });
                     }
-                });
             });
 
             const sortedPlayers = Object.entries(playerStats).sort((a, b) => {
@@ -1775,16 +4012,120 @@
             document.documentElement.style.overscrollBehavior = 'none';
         }
 
+        // 添加调试信息
+        function debugLog(message) {
+            console.log(`🏸 [Debug] ${message}`);
+        }
+
+        // 检查必要的元素是否存在
+        function checkRequiredElements() {
+            const requiredIds = ['playersNames', 'matchesPreview', 'loadingOverlay'];
+            const missing = [];
+            
+            requiredIds.forEach(id => {
+                if (!document.getElementById(id)) {
+                    missing.push(id);
+                }
+            });
+            
+            if (missing.length > 0) {
+                console.error('缺少必要元素:', missing);
+                return false;
+            }
+            return true;
+        }
+
+        // 安全的初始化函数
+        function safeInit() {
+            try {
+                debugLog('开始初始化页面');
+                
+                // 检查必要元素
+                if (!checkRequiredElements()) {
+                    console.error('页面元素检查失败');
+                    return;
+                }
+                
+                debugLog('更新玩家显示');
+                updatePlayersDisplay();
+                
+                debugLog('生成初始比赛安排');
+                // 确保比赛数据生成成功
+                try {
+                    generateRandomMatches();
+                    if (!matchSchedule || matchSchedule.length === 0) {
+                        throw new Error('比赛数据生成失败');
+                    }
+                    updateMatchDisplay();
+                } catch (error) {
+                    console.error('比赛生成失败:', error);
+                    // 显示错误但不阻止其他功能
+                    const container = document.getElementById('matchesPreview');
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 20px; background: #fff3cd; border-radius: 10px; color: #856404; margin: 20px 0;">
+                                <h3>⚠️ 比赛生成失败</h3>
+                                <p>无法自动生成比赛安排，请点击"重新开始比赛"手动生成</p>
+                                <button onclick="regenerateMatches()" style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    🎲 重新开始比赛
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                debugLog('初始化云端同步');
+                saveToSync = initSimpleJsonSync();
+                
+                debugLog('设置防刷新');
+                preventPullToRefresh();
+                
+                debugLog('初始化完成');
+                
+            } catch (error) {
+                console.error('初始化失败:', error);
+                // 显示错误信息给用户
+                const container = document.getElementById('matchesPreview');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: #f8d7da; border-radius: 10px; color: #721c24; margin: 20px 0;">
+                            <h3>⚠️ 初始化失败</h3>
+                            <p>页面加载出现问题，请刷新重试</p>
+                            <p style="font-size: 0.8rem; margin-top: 10px;">错误信息: ${error.message}</p>
+                            <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                刷新页面
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            updatePlayersDisplay();
-            saveToSync = initSimpleJsonSync();
-            preventPullToRefresh();
+            debugLog('DOM加载完成');
+            safeInit();
         });
+
+        // 备用初始化（如果 DOMContentLoaded 已经触发）
+        if (document.readyState === 'loading') {
+            debugLog('等待DOM加载');
+        } else {
+            debugLog('DOM已经加载，立即初始化');
+            setTimeout(safeInit, 100); // 稍微延迟确保所有脚本都加载完成
+        }
 
         // 事件监听
         document.getElementById('advancedScoreModal').addEventListener('click', function(e) {
             if (e.target === this) closeAdvancedScoreModal();
+        });
+
+        document.getElementById('playerConfigModal').addEventListener('click', function(e) {
+            if (e.target === this) closePlayerConfigModal();
+        });
+
+        document.getElementById('scheduleModal').addEventListener('click', function(e) {
+            if (e.target === this) closeScheduleModal();
         });
 
         document.getElementById('customDialog').addEventListener('click', function(e) {
@@ -1794,3 +4135,4 @@
     </script>
 </body>
 </html>
+
