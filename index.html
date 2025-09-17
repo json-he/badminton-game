@@ -1684,6 +1684,35 @@
                             score += Math.min(restTime * 100, 500);
                         }
                         
+                        // 新增：队友搭配平衡性检查
+                        let partnershipPenalty = 0;
+                        const team1Players = combo.team1;
+                        const team2Players = combo.team2;
+                        
+                        // 检查已有比赛中这些搭配出现的频率
+                        for (let i = 0; i < matchIndex; i++) {
+                            const previousMatch = matches[i];
+                            if (previousMatch) {
+                                // 检查队伍1的搭配是否重复
+                                const prevTeam1Ids = previousMatch.team1.map(name => 
+                                    players.findIndex(p => p === name));
+                                const prevTeam2Ids = previousMatch.team2.map(name => 
+                                    players.findIndex(p => p === name));
+                                
+                                // 如果当前组合的队伍搭配与之前的完全相同，给予重度惩罚
+                                if ((team1Players[0] === prevTeam1Ids[0] && team1Players[1] === prevTeam1Ids[1]) ||
+                                    (team1Players[0] === prevTeam1Ids[1] && team1Players[1] === prevTeam1Ids[0])) {
+                                    partnershipPenalty += 2000; // 重度惩罚重复搭配
+                                }
+                                if ((team2Players[0] === prevTeam2Ids[0] && team2Players[1] === prevTeam2Ids[1]) ||
+                                    (team2Players[0] === prevTeam2Ids[1] && team2Players[1] === prevTeam2Ids[0])) {
+                                    partnershipPenalty += 2000; // 重度惩罚重复搭配
+                                }
+                            }
+                        }
+                        
+                        score -= partnershipPenalty; // 减去搭配重复的惩罚分
+                        
                         // 随机因子
                         score += Math.random() * 10;
                         
@@ -1851,6 +1880,42 @@
                             }
                         }
                     }
+                    
+                    // 5. 新增：队友搭配平衡性检查（6人模式）
+                    let partnershipPenalty = 0;
+                    // 生成这个组合的所有可能队伍分组
+                    const possibleTeams = [
+                        [[combo[0], combo[1]], [combo[2], combo[3]]],
+                        [[combo[0], combo[2]], [combo[1], combo[3]]],
+                        [[combo[0], combo[3]], [combo[1], combo[2]]]
+                    ];
+                    
+                    // 为每种分组方式检查重复度，选择重复度最低的
+                    let minPenalty = Infinity;
+                    for (const teamConfig of possibleTeams) {
+                        let configPenalty = 0;
+                        
+                        // 检查已有比赛中这些搭配出现的频率
+                        for (let i = 0; i < matchIndex; i++) {
+                            const prevCombo = schedule[i];
+                            if (prevCombo) {
+                                // 检查队伍1的搭配是否重复
+                                if ((teamConfig[0][0] === prevCombo[0] && teamConfig[0][1] === prevCombo[1]) ||
+                                    (teamConfig[0][0] === prevCombo[1] && teamConfig[0][1] === prevCombo[0])) {
+                                    configPenalty += 1000; // 重度惩罚重复搭配
+                                }
+                                // 检查队伍2的搭配是否重复  
+                                if ((teamConfig[1][0] === prevCombo[2] && teamConfig[1][1] === prevCombo[3]) ||
+                                    (teamConfig[1][0] === prevCombo[3] && teamConfig[1][1] === prevCombo[2])) {
+                                    configPenalty += 1000; // 重度惩罚重复搭配
+                                }
+                            }
+                        }
+                        
+                        minPenalty = Math.min(minPenalty, configPenalty);
+                    }
+                    
+                    score -= (minPenalty === Infinity ? 0 : minPenalty);
                     
                     return score;
                 }
@@ -2149,6 +2214,30 @@
                     if (minRestTime >= 2) {
                         score += minRestTime * 5000;
                     }
+                    
+                    // 新增：队友搭配平衡性检查（5人模式）
+                    let partnershipPenalty = 0;
+                    const team1Players = combo.team1;
+                    const team2Players = combo.team2;
+                    
+                    // 检查已有比赛中这些搭配出现的频率
+                    for (let i = 0; i < matchIndex; i++) {
+                        const prevMatch = selectedMatches[i];
+                        if (prevMatch) {
+                            // 检查队伍1的搭配是否重复
+                            if ((team1Players[0] === prevMatch.team1[0] && team1Players[1] === prevMatch.team1[1]) ||
+                                (team1Players[0] === prevMatch.team1[1] && team1Players[1] === prevMatch.team1[0])) {
+                                partnershipPenalty += 3000; // 重度惩罚重复搭配
+                            }
+                            // 检查队伍2的搭配是否重复  
+                            if ((team2Players[0] === prevMatch.team2[0] && team2Players[1] === prevMatch.team2[1]) ||
+                                (team2Players[0] === prevMatch.team2[1] && team2Players[1] === prevMatch.team2[0])) {
+                                partnershipPenalty += 3000; // 重度惩罚重复搭配
+                            }
+                        }
+                    }
+                    
+                    score -= partnershipPenalty; // 减去搭配重复的惩罚分
                     
                     // 平衡休息的人的状态
                     const restPlayerRestTime = matchIndex - playerLastMatch[combo.restPlayer];
@@ -2590,6 +2679,35 @@
                             const restTime = matchIndex - playerLastMatch[playerId];
                             score += Math.min(restTime * 1000, 5000);
                         }
+                        
+                        // 新增：队友搭配平衡性检查
+                        let partnershipPenalty = 0;
+                        const team1Partners = combo.team1;
+                        const team2Partners = combo.team2;
+                        
+                        // 检查已有比赛中这些搭配出现的频率
+                        for (let i = 0; i < matchIndex; i++) {
+                            const previousMatch = matches[i];
+                            if (previousMatch) {
+                                // 检查队伍1的搭配是否重复
+                                const prevTeam1Names = previousMatch.team1.map(name => 
+                                    players.findIndex(p => p === name));
+                                const prevTeam2Names = previousMatch.team2.map(name => 
+                                    players.findIndex(p => p === name));
+                                
+                                // 如果当前组合的队伍搭配与之前的完全相同，给予重度惩罚
+                                if ((team1Partners[0] === prevTeam1Names[0] && team1Partners[1] === prevTeam1Names[1]) ||
+                                    (team1Partners[0] === prevTeam1Names[1] && team1Partners[1] === prevTeam1Names[0])) {
+                                    partnershipPenalty += 3000; // 重度惩罚重复搭配
+                                }
+                                if ((team2Partners[0] === prevTeam2Names[0] && team2Partners[1] === prevTeam2Names[1]) ||
+                                    (team2Partners[0] === prevTeam2Names[1] && team2Partners[1] === prevTeam2Names[0])) {
+                                    partnershipPenalty += 3000; // 重度惩罚重复搭配
+                                }
+                            }
+                        }
+                        
+                        score -= partnershipPenalty; // 减去搭配重复的惩罚分
                         
                         // 平衡休息分配
                         const restingPlayerId = combo.resting;
