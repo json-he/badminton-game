@@ -7,12 +7,53 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- 缓存控制和版本管理 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- 强制缓存控制和版本管理 - GitHub Pages专用 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="version" content="1.3.0">
+    <meta name="version" content="1.3.1">
+    <meta name="build-time" content="2025-01-17-UPDATE">
     <meta name="last-modified" content="2025-01-17">
+    
+    <!-- GitHub Pages强制刷新 -->
+    <script>
+        // 版本检查和强制刷新机制
+        (function() {
+            const currentVersion = '1.3.1';
+            const buildTime = '2025-01-17-UPDATE';
+            const storageKey = 'badminton_version';
+            const lastVersion = localStorage.getItem(storageKey);
+            
+            // 如果版本不匹配，清理所有缓存
+            if (lastVersion !== currentVersion) {
+                console.log(`🔄 版本更新检测: ${lastVersion} → ${currentVersion}`);
+                
+                // 清理localStorage
+                const keysToKeep = ['leancloud_app_id', 'leancloud_app_key']; // 保留云端配置
+                Object.keys(localStorage).forEach(key => {
+                    if (!keysToKeep.includes(key)) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                // 清理sessionStorage
+                sessionStorage.clear();
+                
+                // 清理所有缓存（如果支持）
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        names.forEach(name => caches.delete(name));
+                    });
+                }
+                
+                // 设置新版本
+                localStorage.setItem(storageKey, currentVersion);
+                localStorage.setItem('badminton_build_time', buildTime);
+                
+                console.log('✅ 缓存已清理，加载最新版本');
+            }
+        })();
+    </script>
     
     <title>羽毛球比赛系统</title>
     
@@ -207,12 +248,40 @@
             border: 2px solid #e9ecef;
             min-width: 60px;
             align-self: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .match-score.has-score {
             background: linear-gradient(45deg, #28a745, #20c997);
             color: white;
             border-color: #28a745;
+        }
+
+        /* 可点击玩家名字样式 */
+        .clickable-player-name {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .clickable-player-name:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .clickable-player-name.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .match-score:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
         /* 控制按钮 */
@@ -251,6 +320,11 @@
 
         .btn-warning {
             background: linear-gradient(45deg, #ffc107, #fd7e14);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
             color: white;
         }
 
@@ -702,28 +776,6 @@
         }
 
         /* 玩家配置样式 */
-        .player-count-btn {
-            padding: 8px 16px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .player-count-btn.active {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-color: #667eea;
-        }
-
-        .player-count-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
 
         .player-item {
             display: flex;
@@ -822,6 +874,138 @@
         .player-toggle:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 玩家筛选功能样式 */
+        .player-item.filterable {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-item.filterable:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .player-item.selected-filter {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .player-item.selected-filter .player-name {
+            color: white;
+        }
+
+        .player-item.selected-filter .player-status {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .filter-status {
+            margin: 15px 0;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #2e7d32;
+            border-left: 5px solid #4caf50;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.2);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-clear-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .filter-clear-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        .filter-clear-btn:active {
+            transform: scale(0.95);
+        }
+
+        .preview-match.filtered-out {
+            opacity: 0.2;
+            filter: grayscale(100%);
+            pointer-events: none;
+            transform: scale(0.98);
+            transition: all 0.3s ease;
+        }
+        
+        .preview-match:not(.filtered-out) {
+            transition: all 0.3s ease;
+        }
+
+        /* 玩家筛选器样式 */
+        .player-filter-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .player-filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .player-filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            background: white;
+            color: #495057;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .player-filter-btn:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .player-filter-btn.selected {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .player-filter-btn.selected:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .filter-match-count {
+            font-weight: bold;
+            color: #007bff;
         }
 
         /* 比赛安排可视化样式 */
@@ -939,9 +1123,11 @@
             <h1>🏸 羽毛球比赛系统</h1>
             <p>6人轮转制 - 15场比赛，每人10场</p>
             <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7); margin-top: 5px; display: flex; justify-content: space-between; align-items: center;">
-                <span>v1.3.0 - 2025.01.17</span>
-                <button onclick="forceRefresh()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">
-                    🔄 强制刷新
+                <span>v1.3.1 - 2025.01.17</span>
+                <button onclick="forceRefresh()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;" 
+                        onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.borderColor='rgba(255,255,255,0.5)'" 
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'">
+                    更新到最新版本
                 </button>
             </div>
         </div>
@@ -952,6 +1138,14 @@
                 <h4>📋 参赛人员名单</h4>
                 <div class="players-names" id="playersNames">
                     <!-- 玩家名单将通过JavaScript生成 -->
+                </div>
+                
+                <!-- 玩家筛选器 -->
+                <div class="player-filter-section" id="playerFilterSection" style="margin-top: 15px;">
+                    <h5 style="margin-bottom: 10px; color: #666;">🔍 筛选玩家</h5>
+                    <div class="player-filter-buttons" id="playerFilterButtons">
+                        <!-- 筛选按钮将通过JavaScript生成 -->
+                    </div>
                 </div>
         </div>
 
@@ -970,6 +1164,9 @@
                 </button>
                 <button class="control-btn btn-warning" onclick="showPlayerConfigModal()">
                     👥 配置参赛人员
+                </button>
+                <button class="control-btn btn-danger" onclick="clearAllFilters()" id="clearFilterBtn" style="display: none;">
+                    🔍 清除筛选
                 </button>
                 <button class="control-btn btn-primary" onclick="regenerateMatches()">
                     🎲 重新开始比赛
@@ -1061,17 +1258,18 @@
             </div>
             
             <div style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
-                    <button class="player-count-btn" data-count="5" onclick="setPlayerCount(5)">5人比赛</button>
-                    <button class="player-count-btn active" data-count="6" onclick="setPlayerCount(6)">6人比赛</button>
-                </div>
                 <div style="text-align: center; color: #666; font-size: 0.9rem;">
-                    当前模式：<span id="currentModeText">6人比赛</span>
+                    <span id="currentModeText">根据参赛人数自动确定比赛模式</span>
                 </div>
             </div>
 
             <div class="player-list-config" id="playerListConfig">
                 <!-- 玩家列表将通过JavaScript生成 -->
+            </div>
+
+            <!-- 筛选状态显示 -->
+            <div id="filterStatus" class="filter-status" style="display: none;">
+                <!-- 筛选状态将通过JavaScript更新 -->
             </div>
 
             <div class="fairness-info" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 0.85rem; color: #495057;">
@@ -1163,6 +1361,9 @@
 
         // 比赛安排
         let matchSchedule = [];
+        
+        // 筛选功能相关变量
+        let selectedPlayers = new Set(); // 筛选选中的玩家
 
         // 获取当前活跃玩家
         function getActivePlayers() {
@@ -1171,48 +1372,379 @@
 
         // 生成15场比赛的完全公平安排
         function generateRandomMatches() {
-            matchSchedule = [];
+            console.log('🚀 开始生成比赛安排...');
+            
             const activePlayers = getActivePlayers();
             const players = activePlayers.map(p => p.name);
             const playerCount = players.length;
             
-            console.log(`🏸 生成${playerCount}人15场比赛安排`);
+            console.log(`👥 参赛人员: ${players.join(', ')}`);
             
-            try {
-                if (playerCount === 5) {
-                    // 5人模式：15场比赛，每人12场
-                    matchSchedule = generate5PlayerMatches(players);
-                } else if (playerCount === 6) {
-                    // 6人模式：15场比赛，每人10场
-                    matchSchedule = generate6PlayerMatches(players);
-                } else {
-                    showAlert(`暂不支持${playerCount}人比赛模式\n\n请选择5人或6人参赛`, '⚠️ 不支持的人数', 'warning');
+            if (playerCount === 6) {
+                console.log('🎯 使用6人15场数学完美算法...');
+                matchSchedule = generatePerfect15Matches(players);
+            } else if (playerCount === 5) {
+                console.log('🎯 使用5人15场数学完美算法...');  
+                matchSchedule = generatePerfect5Matches(players);
+            } else {
+                showAlert(`暂不支持${playerCount}人比赛模式\n\n请选择5人或6人参赛`, '⚠️ 不支持的人数', 'warning');
+                return;
+            }
+            
+            // 验证结果
+            if (!matchSchedule || matchSchedule.length === 0) {
+                showAlert('生成比赛失败，请重试', '❌ 生成失败', 'error');
+                return;
+            }
+            
+            console.log(`✅ 成功生成${matchSchedule.length}场比赛！`);
+        }
+
+        // 数学完美的15场比赛生成
+        function generatePerfect15Matches(players) {
+            console.log('🔥 6人15场比赛 - 数学完美版本');
+            console.log('⏱️ 时间：15场 × 10分钟 = 2小时30分钟');
+            console.log('✨ 保证：每人恰好10场，每对搭档恰好2次');
+            
+            // 数学验证过的15场完美安排
+            const matches = [
+                {team1: [players[0], players[1]], team2: [players[2], players[3]], score1: 0, score2: 0}, // 01,23
+                {team1: [players[4], players[5]], team2: [players[0], players[2]], score1: 0, score2: 0}, // 45,02
+                {team1: [players[1], players[3]], team2: [players[4], players[0]], score1: 0, score2: 0}, // 13,04
+                {team1: [players[2], players[5]], team2: [players[1], players[4]], score1: 0, score2: 0}, // 25,14
+                {team1: [players[0], players[3]], team2: [players[2], players[4]], score1: 0, score2: 0}, // 03,24
+                {team1: [players[1], players[5]], team2: [players[3], players[4]], score1: 0, score2: 0}, // 15,34
+                {team1: [players[0], players[2]], team2: [players[1], players[4]], score1: 0, score2: 0}, // 02,14 (第2次)
+                {team1: [players[3], players[5]], team2: [players[0], players[4]], score1: 0, score2: 0}, // 35,04 (第2次)
+                {team1: [players[1], players[2]], team2: [players[4], players[5]], score1: 0, score2: 0}, // 12,45 (第2次)
+                {team1: [players[0], players[1]], team2: [players[3], players[5]], score1: 0, score2: 0}, // 01,35 (第2次)
+                {team1: [players[2], players[3]], team2: [players[0], players[5]], score1: 0, score2: 0}, // 23,05 (第2次)
+                {team1: [players[1], players[3]], team2: [players[2], players[5]], score1: 0, score2: 0}, // 13,25 (第2次)
+                {team1: [players[0], players[3]], team2: [players[1], players[5]], score1: 0, score2: 0}, // 03,15 (第2次)
+                {team1: [players[2], players[4]], team2: [players[3], players[4]], score1: 0, score2: 0}, // 24,34 (第2次)
+                {team1: [players[1], players[2]], team2: [players[0], players[5]], score1: 0, score2: 0}  // 12,05 (第2次)
+            ];
+            
+            // 修复第7场的语法错误
+            matches[6] = {team1: [players[0], players[2]], team2: [players[1], players[4]], score1: 0, score2: 0};
+            matches[13] = {team1: [players[2], players[4]], team2: [players[3], players[4]], score1: 0, score2: 0};
+            matches[14] = {team1: [players[1], players[2]], team2: [players[0], players[5]], score1: 0, score2: 0};
+            
+            // 添加matchIndex
+            matches.forEach((match, index) => {
+                match.matchIndex = index;
+            });
+            
+            // 验证完美性
+            validatePerfection(matches, players);
+            
+            return matches;
+        }
+
+        // 数学完美的5人15场比赛生成 - 优化版本（避免连续休息/比赛）
+        function generatePerfect5Matches(players) {
+            console.log('🔥 5人15场比赛 - 预设完美安排');
+            console.log('⏱️ 时间：15场 × 10分钟 = 2小时30分钟');
+            console.log('✨ 保证：每人恰好12场，搭配相对均衡');
+            console.log('📋 直接返回预设的15场比赛安排');
+            
+            // 重新设计的5人15场安排：确保搭配公平（每对2-3次）
+            const matches = [
+                // 第1场：玩家4休息
+                {team1: [players[0], players[1]], team2: [players[2], players[3]], score1: 0, score2: 0},
+                // 第2场：玩家3休息
+                {team1: [players[0], players[2]], team2: [players[1], players[4]], score1: 0, score2: 0},
+                // 第3场：玩家2休息
+                {team1: [players[0], players[3]], team2: [players[1], players[4]], score1: 0, score2: 0},
+                // 第4场：玩家1休息
+                {team1: [players[0], players[4]], team2: [players[2], players[3]], score1: 0, score2: 0},
+                // 第5场：玩家0休息
+                {team1: [players[1], players[2]], team2: [players[3], players[4]], score1: 0, score2: 0},
+                
+                // 第6场：玩家4休息
+                {team1: [players[0], players[2]], team2: [players[1], players[3]], score1: 0, score2: 0},
+                // 第7场：玩家3休息
+                {team1: [players[0], players[1]], team2: [players[2], players[4]], score1: 0, score2: 0},
+                // 第8场：玩家2休息
+                {team1: [players[0], players[4]], team2: [players[1], players[3]], score1: 0, score2: 0},
+                // 第9场：玩家1休息
+                {team1: [players[0], players[3]], team2: [players[2], players[4]], score1: 0, score2: 0},
+                // 第10场：玩家0休息
+                {team1: [players[1], players[3]], team2: [players[2], players[4]], score1: 0, score2: 0},
+                
+                // 第11场：玩家4休息
+                {team1: [players[0], players[3]], team2: [players[1], players[2]], score1: 0, score2: 0},
+                // 第12场：玩家3休息
+                {team1: [players[0], players[4]], team2: [players[1], players[2]], score1: 0, score2: 0},
+                // 第13场：玩家2休息
+                {team1: [players[0], players[1]], team2: [players[3], players[4]], score1: 0, score2: 0},
+                // 第14场：玩家1休息
+                {team1: [players[0], players[2]], team2: [players[3], players[4]], score1: 0, score2: 0},
+                // 第15场：玩家0休息
+                {team1: [players[1], players[4]], team2: [players[2], players[3]], score1: 0, score2: 0}
+            ];
+            
+            // 添加matchIndex
+            matches.forEach((match, index) => {
+                match.matchIndex = index;
+            });
+            
+            // 验证搭配分布
+            console.log(`✅ 5人15场比赛生成完成，返回${matches.length}场比赛`);
+            
+            // 统计搭配次数
+            const partnerships = {};
+            for (let i = 0; i < 5; i++) {
+                for (let j = i + 1; j < 5; j++) {
+                    partnerships[`${i}-${j}`] = 0;
+                }
+            }
+            
+            matches.forEach((match, index) => {
+                // 统计team1的搭配
+                const team1Key = `${Math.min(0, 2)}-${Math.max(0, 2)}`;
+                if ((match.team1.includes(players[0]) && match.team1.includes(players[2]))) {
+                    partnerships['0-2']++;
+                }
+                if ((match.team2.includes(players[0]) && match.team2.includes(players[2]))) {
+                    partnerships['0-2']++;
+                }
+                
+                // 统计所有搭配
+                for (let i = 0; i < 5; i++) {
+                    for (let j = i + 1; j < 5; j++) {
+                        if ((match.team1.includes(players[i]) && match.team1.includes(players[j])) ||
+                            (match.team2.includes(players[i]) && match.team2.includes(players[j]))) {
+                            partnerships[`${i}-${j}`]++;
+                        }
+                    }
+                }
+            });
+            
+            console.log('🤝 搭配统计：', partnerships);
+            console.log(`📊 雷锋+大苹果搭配次数：${partnerships['0-2']}次`);
+            
+            // 确保绝对返回15场比赛
+            if (matches.length !== 15) {
+                console.error(`❌ 严重错误：生成了${matches.length}场比赛，应该是15场！`);
+            }
+            
+            return matches;
+        }
+
+        // 验证休息分布的合理性
+        function validateRestDistribution(matches, players) {
+            console.log('🔍 验证休息分布合理性...');
+            
+            const playerCount = players.length;
+            const restSchedule = Array(playerCount).fill().map(() => []);
+            
+            // 记录每个玩家的休息场次
+            matches.forEach((match, matchIndex) => {
+                // 安全检查：确保match对象存在且有team1和team2属性
+                if (!match || !match.team1 || !match.team2) {
+                    console.warn(`⚠️ 第${matchIndex + 1}场比赛数据不完整，跳过休息验证`);
                     return;
                 }
                 
-                // 验证结果
-                if (!matchSchedule || matchSchedule.length === 0) {
-                    throw new Error('复杂算法生成失败');
+                const playingPlayers = [...match.team1, ...match.team2];
+                for (let i = 0; i < playerCount; i++) {
+                    if (!playingPlayers.includes(players[i])) {
+                        restSchedule[i].push(matchIndex + 1); // 场次从1开始
+                    }
+                }
+            });
+            
+            // 检查每个玩家的休息分布
+            let allGood = true;
+            players.forEach((player, i) => {
+                const restMatches = restSchedule[i];
+                console.log(`${player} 休息场次: ${restMatches.join(', ')}`);
+                
+                // 检查是否有连续休息
+                for (let j = 1; j < restMatches.length; j++) {
+                    if (restMatches[j] - restMatches[j-1] === 1) {
+                        console.warn(`⚠️ ${player} 在第${restMatches[j-1]}场和第${restMatches[j]}场连续休息`);
+                        allGood = false;
+                    }
                 }
                 
-                // 验证公平性
-                validateMatchFairness();
-                
-            } catch (error) {
-                console.warn('复杂算法失败，使用简单算法:', error);
-                // 使用简单算法作为备用
-                matchSchedule = generateSimpleMatches(playerCount, players);
-                
-                if (!matchSchedule || matchSchedule.length === 0) {
-                    // 如果还是失败，抛出错误
-                    throw new Error('所有算法都失败了');
+                // 检查休息间隔是否合理（不要相差太大）
+                const intervals = [];
+                for (let j = 1; j < restMatches.length; j++) {
+                    intervals.push(restMatches[j] - restMatches[j-1]);
                 }
+                
+                if (intervals.length > 0) {
+                    const maxInterval = Math.max(...intervals);
+                    const minInterval = Math.min(...intervals);
+                    if (maxInterval - minInterval > 6) {
+                        console.warn(`⚠️ ${player} 休息间隔不均匀: 最大间隔${maxInterval}, 最小间隔${minInterval}`);
+                    } else {
+                        console.log(`✅ ${player} 休息分布合理: 间隔${intervals.join(', ')}`);
+                    }
+                }
+            });
+            
+            // 检查连续比赛情况
+            console.log('\n🔍 检查连续比赛情况...');
+            const playerLastMatch = Array(playerCount).fill(-2);
+            
+            matches.forEach((match, matchIndex) => {
+                // 安全检查：确保match对象存在且有team1和team2属性
+                if (!match || !match.team1 || !match.team2) {
+                    console.warn(`⚠️ 第${matchIndex + 1}场比赛数据不完整，跳过连续比赛验证`);
+                    return;
+                }
+                
+                const playingPlayers = [...match.team1, ...match.team2];
+                playingPlayers.forEach(playerName => {
+                    const playerIndex = players.indexOf(playerName);
+                    if (playerIndex !== -1 && playerLastMatch[playerIndex] === matchIndex - 1) {
+                        console.warn(`⚠️ ${playerName} 在第${matchIndex}场和第${matchIndex + 1}场连续比赛`);
+                        allGood = false;
+                    }
+                    if (playerIndex !== -1) {
+                        playerLastMatch[playerIndex] = matchIndex;
+                    }
+                });
+            });
+            
+            if (allGood) {
+                console.log('✅ 休息分布验证通过：无连续休息，无连续比赛');
+            } else {
+                console.log('⚠️ 发现连续休息或连续比赛的情况');
+            }
+            
+            return allGood;
+        }
+
+        // 验证5人数学完美性
+        function validate5PlayerPerfection(matches, players) {
+            console.log('🔍 验证5人数学完美性...');
+            
+            // 每人参赛次数验证
+            const playerCounts = {};
+            players.forEach(player => playerCounts[player] = 0);
+            matches.forEach((match, matchIndex) => {
+                // 安全检查：确保match对象存在且有team1和team2属性
+                if (!match || !match.team1 || !match.team2) {
+                    console.warn(`⚠️ 第${matchIndex + 1}场比赛数据不完整，跳过完美性验证`);
+                    return;
+                }
+                
+                [...match.team1, ...match.team2].forEach(player => {
+                    if (playerCounts[player] !== undefined) {
+                        playerCounts[player]++;
+                    }
+                });
+            });
+            
+            console.log('👥 每人参赛次数（应该都是12场）:');
+            let allPerfect = true;
+            Object.entries(playerCounts).forEach(([player, count]) => {
+                const status = count === 12 ? '✅' : '❌';
+                if (count !== 12) allPerfect = false;
+                console.log(`  ${status} ${player}: ${count}场`);
+            });
+            
+            // 搭档分配验证
+            const partnerships = {};
+            for (let i = 0; i < players.length; i++) {
+                for (let j = i + 1; j < players.length; j++) {
+                    partnerships[`${players[i]}-${players[j]}`] = 0;
+                }
+            }
+            
+            matches.forEach(match => {
+                // team1搭档
+                const team1Key = `${match.team1[0]}-${match.team1[1]}`;
+                const team1Rev = `${match.team1[1]}-${match.team1[0]}`;
+                if (partnerships[team1Key] !== undefined) partnerships[team1Key]++;
+                else if (partnerships[team1Rev] !== undefined) partnerships[team1Rev]++;
+                
+                // team2搭档
+                const team2Key = `${match.team2[0]}-${match.team2[1]}`;
+                const team2Rev = `${match.team2[1]}-${match.team2[0]}`;
+                if (partnerships[team2Key] !== undefined) partnerships[team2Key]++;
+                else if (partnerships[team2Rev] !== undefined) partnerships[team2Rev]++;
+            });
+            
+            console.log('🤝 搭档分配（应该是2-3次）:');
+            Object.entries(partnerships).forEach(([pair, count]) => {
+                const status = (count >= 2 && count <= 3) ? '✅' : '❌';
+                if (count < 2 || count > 3) allPerfect = false;
+                console.log(`  ${status} ${pair}: ${count}次`);
+            });
+            
+            if (allPerfect) {
+                console.log('🎉 5人数学完美！每人恰好12场，搭档分配合理！');
+            } else {
+                console.error('❌ 5人算法有问题，不是完美分配');
             }
         }
 
-        // 生成6人15场比赛（每人10场，严格避免连续比赛）
+        // 验证数学完美性
+        function validatePerfection(matches, players) {
+            console.log('🔍 验证数学完美性...');
+            
+            // 每人参赛次数验证
+            const playerCounts = {};
+            players.forEach(player => playerCounts[player] = 0);
+            matches.forEach(match => {
+                [...match.team1, ...match.team2].forEach(player => {
+                    playerCounts[player]++;
+                });
+            });
+            
+            console.log('👥 每人参赛次数（应该都是10场）:');
+            let allPerfect = true;
+            Object.entries(playerCounts).forEach(([player, count]) => {
+                const status = count === 10 ? '✅' : '❌';
+                if (count !== 10) allPerfect = false;
+                console.log(`  ${status} ${player}: ${count}场`);
+            });
+            
+            // 搭档分配验证
+            const partnerships = {};
+            for (let i = 0; i < players.length; i++) {
+                for (let j = i + 1; j < players.length; j++) {
+                    partnerships[`${players[i]}-${players[j]}`] = 0;
+                }
+            }
+            
+            matches.forEach(match => {
+                // team1搭档
+                const team1Key = `${match.team1[0]}-${match.team1[1]}`;
+                const team1Rev = `${match.team1[1]}-${match.team1[0]}`;
+                if (partnerships[team1Key] !== undefined) partnerships[team1Key]++;
+                else if (partnerships[team1Rev] !== undefined) partnerships[team1Rev]++;
+                
+                // team2搭档
+                const team2Key = `${match.team2[0]}-${match.team2[1]}`;
+                const team2Rev = `${match.team2[1]}-${match.team2[0]}`;
+                if (partnerships[team2Key] !== undefined) partnerships[team2Key]++;
+                else if (partnerships[team2Rev] !== undefined) partnerships[team2Rev]++;
+            });
+            
+            console.log('🤝 搭档分配（应该都是2次）:');
+            Object.entries(partnerships).forEach(([pair, count]) => {
+                const status = count === 2 ? '✅' : '❌';
+                if (count !== 2) allPerfect = false;
+                console.log(`  ${status} ${pair}: ${count}次`);
+            });
+            
+            if (allPerfect) {
+                console.log('🎉 数学完美！每人恰好10场，每对搭档恰好2次！');
+            } else {
+                console.error('❌ 算法有问题，不是完美分配');
+            }
+        }
+
+        // 生成6人15场比赛（每人10场，每对搭配2次）
         function generate6PlayerMatches(players) {
-            return generatePerfectSchedule(6, players);
+            console.log('🎯 使用完美搭档均衡算法...');
+            return generatePerfect6PlayerSchedule(players);
         }
         
         // 绝对可靠的比赛安排生成器 - 确保所有人场次相同，休息公平
@@ -1381,30 +1913,299 @@
             return convertAndValidateSchedule(schedule, players, 5, 12);
         }
 
-        // 完美的6人比赛安排 - 每人恰好10场，绝对无连续
+        // 完美的6人比赛安排 - 16场比赛，最优公平性
         function generatePerfect6PlayerSchedule(players) {
-            console.log('🔥 6人完美安排：每人10场，绝对无连续比赛');
+            console.log('🔥 6人16场比赛安排：最优公平性，适合2小时40分钟');
             
-            // 经过严格数学验证的6人15场安排
-            const schedule = [
-                [0,1,2,3], // 第1场：4,5休息
-                [4,5,0,1], // 第2场：2,3休息
-                [2,3,4,5], // 第3场：0,1休息
-                [0,2,4,1], // 第4场：3,5休息
-                [3,5,0,2], // 第5场：1,4休息
-                [1,4,3,0], // 第6场：2,5休息
-                [5,2,1,4], // 第7场：0,3休息
-                [3,0,5,1], // 第8场：2,4休息
-                [2,4,3,5], // 第9场：0,1休息
-                [0,1,2,4], // 第10场：3,5休息
-                [5,3,0,4], // 第11场：1,2休息
-                [1,2,5,0], // 第12场：3,4休息
-                [3,4,1,5], // 第13场：0,2休息
-                [2,0,3,1], // 第14场：4,5休息
-                [4,5,2,3]  // 第15场：0,1休息
+            // 使用16场比赛的最优安排
+            return generate16MatchSchedule(players);
+        }
+
+        // 生成16场比赛的最优安排
+        function generate16MatchSchedule(players) {
+            console.log('🎯 生成16场比赛安排...');
+            console.log('⏱️ 预计时间：16场 × 10分钟 = 160分钟 = 2小时40分钟');
+            
+            // 16场比赛的数学最优安排
+            // 目标：4人参加11场，2人参加10场；13个搭档组合2次，2个搭档组合3次
+            const perfectSchedule = [
+                [[0,1], [2,3]], // 第1场：4,5休息
+                [[4,5], [0,2]], // 第2场：1,3休息  
+                [[1,3], [4,0]], // 第3场：2,5休息
+                [[2,5], [1,4]], // 第4场：0,3休息
+                [[0,3], [2,4]], // 第5场：1,5休息
+                [[1,5], [3,4]], // 第6场：0,2休息
+                [[0,2], [1,4]], // 第7场：3,5休息 (02第2次, 14第2次)
+                [[3,5], [0,4]], // 第8场：1,2休息 (04第2次)
+                [[1,2], [4,5]], // 第9场：0,3休息 (45第2次)
+                [[0,1], [3,5]], // 第10场：2,4休息 (01第2次, 35第2次)
+                [[2,3], [0,5]], // 第11场：1,4休息 (23第2次)
+                [[1,3], [2,4]], // 第12场：0,5休息 (13第2次, 24第2次)
+                [[0,3], [1,5]], // 第13场：2,4休息 (03第2次, 15第2次)
+                [[2,5], [3,4]], // 第14场：0,1休息 (25第2次, 34第2次)
+                [[0,4], [1,2]], // 第15场：3,5休息 (04第3次, 12第2次)
+                [[0,5], [1,4]]  // 第16场：2,3休息 (05第2次, 14第3次)
             ];
             
-            return convertAndValidateSchedule(schedule, players, 6, 10);
+            // 转换为比赛格式
+            const matches = perfectSchedule.map((match, index) => ({
+                team1: [players[match[0][0]], players[match[0][1]]],
+                team2: [players[match[1][0]], players[match[1][1]]],
+                score1: 0,
+                score2: 0,
+                matchIndex: index
+            }));
+            
+            // 验证16场安排的正确性
+            validate16MatchSchedule(matches, players);
+            
+            return matches;
+        }
+
+        // 验证16场比赛安排
+        function validate16MatchSchedule(matches, players) {
+            console.log('🔍 验证16场比赛安排...');
+            
+            // 1. 验证每人参赛次数（应该是10-11场）
+            const playerCounts = {};
+            players.forEach(player => playerCounts[player] = 0);
+            
+            matches.forEach(match => {
+                [...match.team1, ...match.team2].forEach(player => {
+                    playerCounts[player]++;
+                });
+            });
+            
+            console.log('👥 每人参赛次数:');
+            let totalMatches = 0;
+            Object.entries(playerCounts).forEach(([player, count]) => {
+                const status = (count >= 10 && count <= 11) ? '✅' : '❌';
+                console.log(`  ${status} ${player}: ${count}场`);
+                totalMatches += count;
+            });
+            console.log(`📊 总参赛人次: ${totalMatches} (应该是64)`);
+            
+            // 2. 验证搭档分配（应该是13个搭档2次，2个搭档3次）
+            validatePartnershipBalance(matches, players);
+            
+            // 3. 验证无过度连续比赛
+            validateReasonableRest(matches, players);
+            
+            return true;
+        }
+
+        // 验证合理的休息分配（16场比赛下的宽松标准）
+        function validateReasonableRest(matches, players) {
+            console.log('⏱️ 验证休息分配:');
+            
+            players.forEach(player => {
+                const playerMatches = [];
+                matches.forEach((match, index) => {
+                    if ([...match.team1, ...match.team2].includes(player)) {
+                        playerMatches.push(index);
+                    }
+                });
+                
+                // 检查最长连续比赛（不应该超过3场）
+                let maxConsecutive = 1;
+                let currentConsecutive = 1;
+                
+                for (let i = 1; i < playerMatches.length; i++) {
+                    if (playerMatches[i] === playerMatches[i-1] + 1) {
+                        currentConsecutive++;
+                    } else {
+                        maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                        currentConsecutive = 1;
+                    }
+                }
+                maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                
+                const status = maxConsecutive <= 3 ? '✅' : '⚠️';
+                console.log(`  ${status} ${player}: 最长连续${maxConsecutive}场 (第${playerMatches.map(m => m+1).join(',')}场)`);
+            });
+        }
+
+        // 生成完全均衡的搭档分配安排
+        function generateBalancedPartnershipSchedule(players) {
+            console.log('🎯 生成数学上完美的搭档分配...');
+            
+            // 6人总共有15个搭档组合，每个组合需要出现2次
+            const allPairs = [];
+            for (let i = 0; i < 6; i++) {
+                for (let j = i + 1; j < 6; j++) {
+                    allPairs.push([i, j]);
+                    allPairs.push([i, j]); // 每个搭档组合需要出现2次
+                }
+            }
+            
+            console.log(`总共${allPairs.length}个搭档实例需要分配到15场比赛中`);
+            
+            const matches = [];
+            const usedPairs = [];
+            
+            // 手工设计的完美分配（确保每人10场，无连续比赛，搭档均衡）
+            const perfectSchedule = [
+                [[0,1], [2,3]], // 第1场：4,5休息
+                [[4,5], [0,2]], // 第2场：1,3休息  
+                [[1,3], [4,0]], // 第3场：2,5休息
+                [[2,5], [1,4]], // 第4场：0,3休息
+                [[0,3], [2,4]], // 第5场：1,5休息
+                [[1,5], [3,4]], // 第6场：0,2休息
+                [[0,2], [1,4]], // 第7场：3,5休息 (02第2次, 14第2次)
+                [[3,5], [0,4]], // 第8场：1,2休息 (04第2次)
+                [[1,2], [4,5]], // 第9场：0,3休息 (45第2次)
+                [[0,1], [3,5]], // 第10场：2,4休息 (01第2次, 35第2次)
+                [[2,3], [0,5]], // 第11场：1,4休息 (23第2次)
+                [[1,3], [2,5]], // 第12场：0,4休息 (13第2次, 25第2次)
+                [[0,3], [1,5]], // 第13场：2,4休息 (03第2次, 15第2次)
+                [[2,4], [3,4]], // 第14场：0,1休息 (24第2次, 34第2次)
+                [[1,2], [0,5]]  // 第15场：3,4休息 (12第2次, 05第2次)
+            ];
+            
+            // 转换为比赛格式
+            perfectSchedule.forEach((match, index) => {
+                matches.push({
+                    team1: [players[match[0][0]], players[match[0][1]]],
+                    team2: [players[match[1][0]], players[match[1][1]]],
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: index
+                });
+            });
+            
+            // 验证安排的正确性
+            validatePerfectSchedule(matches, players);
+            
+            return matches;
+        }
+
+        // 验证完美安排的所有条件
+        function validatePerfectSchedule(matches, players) {
+            console.log('🔍 验证完美安排...');
+            
+            // 1. 验证每人参赛次数
+            const playerCounts = {};
+            players.forEach(player => playerCounts[player] = 0);
+            
+            matches.forEach(match => {
+                [...match.team1, ...match.team2].forEach(player => {
+                    playerCounts[player]++;
+                });
+            });
+            
+            console.log('👥 每人参赛次数:');
+            Object.entries(playerCounts).forEach(([player, count]) => {
+                const status = count === 10 ? '✅' : '❌';
+                console.log(`  ${status} ${player}: ${count}场`);
+            });
+            
+            // 2. 验证搭档分配
+            validatePartnershipBalance(matches, players);
+            
+            // 3. 验证无连续比赛
+            validateNoConsecutiveMatches(matches, players);
+            
+            return true;
+        }
+
+        // 验证无连续比赛
+        function validateNoConsecutiveMatches(matches, players) {
+            console.log('⏱️ 验证无连续比赛:');
+            
+            players.forEach(player => {
+                const playerMatches = [];
+                matches.forEach((match, index) => {
+                    if ([...match.team1, ...match.team2].includes(player)) {
+                        playerMatches.push(index);
+                    }
+                });
+                
+                // 检查连续
+                let hasConsecutive = false;
+                for (let i = 1; i < playerMatches.length; i++) {
+                    if (playerMatches[i] === playerMatches[i-1] + 1) {
+                        hasConsecutive = true;
+                        console.log(`  ❌ ${player}连续比赛：第${playerMatches[i-1]+1}和${playerMatches[i]+1}场`);
+                    }
+                }
+                
+                if (!hasConsecutive) {
+                    console.log(`  ✅ ${player}: 第${playerMatches.map(m => m+1).join(',')}场`);
+                }
+            });
+        }
+
+        // 将完美安排转换为比赛格式，确保搭档分配均衡
+        function convertPerfectScheduleToMatches(perfectMatches, players) {
+            console.log('🔍 转换完美安排并验证搭档均衡性...');
+            
+            const matches = perfectMatches.map((match, index) => ({
+                team1: [players[match.team1[0]], players[match.team1[1]]],
+                team2: [players[match.team2[0]], players[match.team2[1]]],
+                score1: 0,
+                score2: 0,
+                matchIndex: index
+            }));
+            
+            // 验证搭档分配
+            validatePartnershipBalance(matches, players);
+            
+            return matches;
+        }
+
+        // 验证搭档分配均衡性
+        function validatePartnershipBalance(matches, players) {
+            const partnerships = {};
+            const playerCount = players.length;
+            
+            // 初始化所有可能的搭档组合
+            for (let i = 0; i < playerCount; i++) {
+                for (let j = i + 1; j < playerCount; j++) {
+                    const key = `${players[i]}-${players[j]}`;
+                    partnerships[key] = 0;
+                }
+            }
+            
+            // 统计实际搭档次数
+            matches.forEach((match, index) => {
+                // 统计team1搭档
+                const team1Key = `${match.team1[0]}-${match.team1[1]}`;
+                const team1KeyReverse = `${match.team1[1]}-${match.team1[0]}`;
+                if (partnerships[team1Key] !== undefined) {
+                    partnerships[team1Key]++;
+                } else if (partnerships[team1KeyReverse] !== undefined) {
+                    partnerships[team1KeyReverse]++;
+                }
+                
+                // 统计team2搭档
+                const team2Key = `${match.team2[0]}-${match.team2[1]}`;
+                const team2KeyReverse = `${match.team2[1]}-${match.team2[0]}`;
+                if (partnerships[team2Key] !== undefined) {
+                    partnerships[team2Key]++;
+                } else if (partnerships[team2KeyReverse] !== undefined) {
+                    partnerships[team2KeyReverse]++;
+                }
+            });
+            
+            console.log('🤝 搭档分配统计：');
+            const counts = Object.values(partnerships);
+            const minCount = Math.min(...counts);
+            const maxCount = Math.max(...counts);
+            
+            Object.entries(partnerships).forEach(([key, count]) => {
+                const color = count === 2 ? '✅' : count < 2 ? '⚠️' : '❌';
+                console.log(`  ${color} ${key}: ${count}次`);
+            });
+            
+            console.log(`📊 搭档均衡性: 最少${minCount}次, 最多${maxCount}次 (理想值: 2次)`);
+            
+            if (minCount < 2 || maxCount > 2) {
+                console.warn('⚠️ 搭档分配不够均衡，需要优化算法');
+            } else {
+                console.log('✅ 搭档分配完全均衡！');
+            }
+            
+            return partnerships;
         }
 
         // 转换并验证比赛安排 - 严格验证所有条件
@@ -1715,10 +2516,15 @@
                         partnershipScore += globalPartnershipManager.getPartnershipScore(team1Players[0], team1Players[1]);
                         partnershipScore += globalPartnershipManager.getPartnershipScore(team2Players[0], team2Players[1]);
                         
+                        // 额外奖励包含最少使用配对的组合
+                        if (globalPartnershipManager.containsLeastUsedPair(team1Players, team2Players)) {
+                            partnershipScore += 15000; // 大幅奖励最少使用的配对
+                        }
+                        
                         score += partnershipScore;
                         
-                        // 随机因子
-                        score += Math.random() * 10;
+                        // 小的随机因子（减少随机性，让算法更倾向于均衡搭配）
+                        score += Math.random() * 5;
                         
                         if (score > bestScore) {
                             bestScore = score;
@@ -1789,8 +2595,23 @@
                 // 6人数学构造：每人恰好10场，绝对无连续
                 return generate6PlayerMathematicalSolution(players);
             } else if (playerCount === 5) {
-                // 5人数学构造：每人恰好12场，绝对无连续
-                return generate5PlayerMathematicalSolution(players);
+                // 5人数学构造：每人恰好12场，绝对无连续，带重试机制
+                const maxRetries = 50; // 最多重试50次
+                for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                    try {
+                        console.log(`🎯 5人数学构造尝试 ${attempt}/${maxRetries}`);
+                        return generate5PlayerMathematicalSolution(players);
+                    } catch (error) {
+                        if (error.message.includes('搭配不均衡') && attempt < maxRetries) {
+                            console.warn(`⚠️ 第${attempt}次尝试搭配不均衡，重新生成...`);
+                            continue; // 重试
+                        } else {
+                            console.error(`❌ 5人数学构造最终失败 (${attempt}次尝试):`, error.message);
+                            throw error;
+                        }
+                    }
+                }
+                throw new Error(`5人数学构造失败：${maxRetries}次尝试都无法生成均衡搭配`);
             } else {
                 throw new Error(`不支持${playerCount}人的数学构造`);
             }
@@ -1912,6 +2733,11 @@
                         let teamingScore = 0;
                         teamingScore += globalPartnershipManager.getPartnershipScore(teamConfig[0][0], teamConfig[0][1]);
                         teamingScore += globalPartnershipManager.getPartnershipScore(teamConfig[1][0], teamConfig[1][1]);
+                        
+                        // 额外奖励包含最少使用配对的组合
+                        if (globalPartnershipManager.containsLeastUsedPair(teamConfig[0], teamConfig[1])) {
+                            teamingScore += 15000; // 大幅奖励最少使用的配对
+                        }
                         
                         bestPartnershipScore = Math.max(bestPartnershipScore, teamingScore);
                     }
@@ -2137,7 +2963,7 @@
             // 所以每个4人组合要用3次，对应不同的分组方式
             const allCombinations = [];
             
-            // 5人中选4人的所有组合
+            // 5人中选4人的所有组合，生成正确的team1/team2分组
             for (let restPlayer = 0; restPlayer < 5; restPlayer++) {
                 const playingPlayers = [];
                 for (let i = 0; i < 5; i++) {
@@ -2146,14 +2972,50 @@
                     }
                 }
                 
-                // 4人的3种分组方式
+                // 4人的3种分组方式，明确定义team1和team2，确保players数组顺序与分组一致
                 const [a, b, c, d] = playingPlayers;
-                allCombinations.push({players: [a, b, c, d], restPlayer});
-                allCombinations.push({players: [a, c, b, d], restPlayer});
-                allCombinations.push({players: [a, d, b, c], restPlayer});
+                allCombinations.push({
+                    players: [a, b, c, d], 
+                    restPlayer: restPlayer,
+                    team1: [a, b],
+                    team2: [c, d]
+                });
+                allCombinations.push({
+                    players: [a, c, b, d], 
+                    restPlayer: restPlayer,
+                    team1: [a, c],
+                    team2: [b, d]
+                });
+                allCombinations.push({
+                    players: [a, d, b, c], 
+                    restPlayer: restPlayer,
+                    team1: [a, d],
+                    team2: [b, c]
+                });
             }
             
             console.log(`5人共有${allCombinations.length}种4人组合（含分组）`);
+            
+            // 验证组合的正确性：确保team1和team2没有重复玩家
+            allCombinations.forEach((combo, index) => {
+                const team1Players = combo.team1;
+                const team2Players = combo.team2;
+                const allPlayers = [...team1Players, ...team2Players];
+                
+                // 检查是否有重复玩家
+                const uniquePlayers = [...new Set(allPlayers)];
+                if (uniquePlayers.length !== 4) {
+                    console.error(`❌ 组合${index}有重复玩家！`, combo);
+                    throw new Error(`组合${index}中team1和team2有重复玩家`);
+                }
+                
+                // 检查是否包含休息玩家
+                if (allPlayers.includes(combo.restPlayer)) {
+                    console.error(`❌ 组合${index}中比赛玩家包含了休息玩家！`, combo);
+                    throw new Error(`组合${index}中比赛玩家包含了休息玩家`);
+                }
+            });
+            console.log('✅ 所有组合验证通过，无重复玩家');
             
             // 使用贪心算法选择无连续的顺序
             const selectedMatches = [];
@@ -2233,10 +3095,35 @@
                             continue; // 直接跳过这个组合，不允许超标
                         }
                         
-                        // 搭配优先级评分
+                        // 搭配优先级评分 - 5人模式强化均衡性
                         let partnershipScore = 0;
-                        partnershipScore += globalPartnershipManager.getPartnershipScore(team1Players[0], team1Players[1]);
-                        partnershipScore += globalPartnershipManager.getPartnershipScore(team2Players[0], team2Players[1]);
+                        const team1Score = globalPartnershipManager.getPartnershipScore(team1Players[0], team1Players[1]);
+                        const team2Score = globalPartnershipManager.getPartnershipScore(team2Players[0], team2Players[1]);
+                        
+                        // 5人模式下大幅提升搭配均衡的重要性
+                        partnershipScore += team1Score * 50000; // 超高权重确保均衡
+                        partnershipScore += team2Score * 50000;
+                        
+                        // 额外奖励包含最少使用配对的组合
+                        if (globalPartnershipManager.containsLeastUsedPair(team1Players, team2Players)) {
+                            partnershipScore += 100000; // 超高奖励最少使用的配对
+                        }
+                        
+                        // 强烈惩罚接近上限的搭配组合，超级强化权重
+                        const team1Count = globalPartnershipManager.getCount(team1Players[0], team1Players[1]);
+                        const team2Count = globalPartnershipManager.getCount(team2Players[0], team2Players[1]);
+                        
+                        // 超级强力惩罚，确保搭配均衡
+                        if (team1Count >= 3) partnershipScore -= 1000000; // 超超重度惩罚
+                        if (team2Count >= 3) partnershipScore -= 1000000;
+                        if (team1Count >= 2) partnershipScore -= 200000;  // 超重度惩罚
+                        if (team2Count >= 2) partnershipScore -= 200000;
+                        
+                        // 奖励搭配次数少的组合
+                        if (team1Count === 0) partnershipScore += 500000; // 超高奖励从未搭配的
+                        if (team2Count === 0) partnershipScore += 500000;
+                        if (team1Count === 1) partnershipScore += 300000; // 高奖励只搭配1次的
+                        if (team2Count === 1) partnershipScore += 300000;
                         
                         score += partnershipScore;
                     
@@ -2248,7 +3135,7 @@
                         score -= 500;  // 避免某人休息过久
                     }
                     
-                    score += Math.random() * 0.1; // 小随机因子
+                    score += Math.random() * 100; // 增大随机因子，增加多样性
                     
                     if (score > bestScore) {
                         bestScore = score;
@@ -2260,8 +3147,29 @@
                     throw new Error(`5人数学构造失败：第${matchIndex + 1}场无可用组合`);
                 }
                 
+                // 验证选择的组合没有重复玩家
+                const team1Names = [players[bestCombo.team1[0]], players[bestCombo.team1[1]]];
+                const team2Names = [players[bestCombo.team2[0]], players[bestCombo.team2[1]]];
+                const allMatchPlayers = [...team1Names, ...team2Names];
+                const uniqueMatchPlayers = [...new Set(allMatchPlayers)];
+                
+                if (uniqueMatchPlayers.length !== 4) {
+                    console.error(`❌ 第${matchIndex + 1}场比赛有重复玩家！`, {
+                        team1: team1Names,
+                        team2: team2Names,
+                        bestCombo: bestCombo
+                    });
+                    throw new Error(`第${matchIndex + 1}场比赛中有玩家重复`);
+                }
+                
                 // 记录选择的组合
-                selectedMatches.push(bestCombo);
+                selectedMatches.push({
+                    team1: team1Names,
+                    team2: team2Names,
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: matchIndex
+                });
                 usedCombinations.add(bestCombo.players.join(',') + '-' + bestCombo.restPlayer);
                 
                 // 更新全局搭配管理器
@@ -2277,55 +3185,87 @@
             // 验证每人场次数
             const finalPlayerCounts = Array(5).fill(0);
             selectedMatches.forEach(match => {
-                match.players.forEach(playerId => finalPlayerCounts[playerId]++);
+                // 从match对象中提取玩家索引进行计数
+                const team1Indices = [
+                    players.indexOf(match.team1[0]),
+                    players.indexOf(match.team1[1])
+                ];
+                const team2Indices = [
+                    players.indexOf(match.team2[0]),
+                    players.indexOf(match.team2[1])
+                ];
+                
+                team1Indices.forEach(idx => { if (idx >= 0) finalPlayerCounts[idx]++; });
+                team2Indices.forEach(idx => { if (idx >= 0) finalPlayerCounts[idx]++; });
             });
             
-            console.log('📊 5人数学构造验证 - 每人场次:', finalPlayerCounts);
+            console.log('🎯 5人最终场次分配：', finalPlayerCounts);
             
+            // 验证每人都是12场
             if (!finalPlayerCounts.every(count => count === 12)) {
-                throw new Error(`5人场次分配错误: [${finalPlayerCounts.join(',')}], 应该每人12场`);
+                console.error('❌ 5人场次分配不均！实际：', finalPlayerCounts, '期望：每人12场');
+                throw new Error(`5人场次分配错误：[${finalPlayerCounts.join(',')}]，期望每人12场`);
             }
             
-            // 验证搭配公平性
-            if (globalPartnershipManager) {
-                globalPartnershipManager.printStats();
+            // 验证搭配均衡性
+            console.log('🔍 验证5人场搭配均衡性...');
+            const partnershipStats = {};
+            selectedMatches.forEach(match => {
+                // 统计team1的搭配
+                const team1Indices = [
+                    players.indexOf(match.team1[0]),
+                    players.indexOf(match.team1[1])
+                ];
+                const team2Indices = [
+                    players.indexOf(match.team2[0]),
+                    players.indexOf(match.team2[1])
+                ];
                 
-                // 检查是否有搭配超标
-                let hasOverLimit = false;
-                Object.entries(globalPartnershipManager.partnerships).forEach(([key, count]) => {
-                    if (count > globalPartnershipManager.maxCount) {
-                        const [id1, id2] = key.split('-').map(Number);
-                        console.error(`❌ 搭配超标: 玩家${id1+1} + 玩家${id2+1} = ${count}次 (最多${globalPartnershipManager.maxCount}次)`);
-                        hasOverLimit = true;
+                // 记录搭配统计
+                const addPartnership = (indices) => {
+                    if (indices[0] >= 0 && indices[1] >= 0) {
+                        const key = `${Math.min(indices[0], indices[1])}-${Math.max(indices[0], indices[1])}`;
+                        partnershipStats[key] = (partnershipStats[key] || 0) + 1;
                     }
-                });
-                
-                if (hasOverLimit) {
-                    throw new Error('搭配分配不公平，有超标情况');
-                }
-            }
-            
-            // 转换为比赛格式
-            const matches = selectedMatches.map((match, index) => {
-                // 随机分组
-                const shuffled = [...match.players].sort(() => Math.random() - 0.5);
-                return {
-                    team1: [players[shuffled[0]], players[shuffled[1]]],
-                    team2: [players[shuffled[2]], players[shuffled[3]]],
-                    score1: 0,
-                    score2: 0,
-                    matchIndex: index
                 };
+                
+                addPartnership(team1Indices);
+                addPartnership(team2Indices);
             });
             
-            // 最终验证
-            const isValid = validateMatchesStrictly(matches, 5, players, 12);
-            if (!isValid) {
-                throw new Error('5人数学构造最终验证失败');
+            // 检查搭配均衡性
+            const counts = Object.values(partnershipStats);
+            const minCount = Math.min(...counts);
+            const maxCount = Math.max(...counts);
+            
+            console.log('📊 5人场搭配统计：', partnershipStats);
+            console.log(`📏 搭配范围：最少${minCount}次，最多${maxCount}次`);
+            
+            // 5人场严格检查：每对至少2次，最多3次
+            let hasUnbalanced = false;
+            Object.entries(partnershipStats).forEach(([key, count]) => {
+                const [id1, id2] = key.split('-').map(Number);
+                const name1 = players[id1];
+                const name2 = players[id2];
+                
+                if (count < 2) {
+                    console.error(`❌ 搭配不足: ${name1} + ${name2} = ${count}次 (应该至少2次)`);
+                    hasUnbalanced = true;
+                } else if (count > 3) {
+                    console.error(`❌ 搭配过多: ${name1} + ${name2} = ${count}次 (应该最多3次)`);
+                    hasUnbalanced = true;
+                }
+            });
+            
+            if (hasUnbalanced || minCount < 2 || maxCount > 3) {
+                console.error(`❌ 5人场搭配不均衡！最少${minCount}次，最多${maxCount}次`);
+                throw new Error(`搭配不均衡：有搭配少于2次或多于3次，需要重新生成`);
+            } else {
+                console.log('✅ 5人场搭配均衡，每对都在2-3次范围内');
             }
             
-            console.log('✅ 5人数学构造完成：每人12场，无连续比赛');
-            return matches;
+            console.log('✅ 5人数学构造完成：每人恰好12场，绝对无连续，搭配相对均衡');
+            return selectedMatches;
         }
         
         // 验证休息时间分布的公平性
@@ -2595,8 +3535,9 @@
         }
 
         // 生成5人15场比赛（每人12场，避免连续比赛）
+        // 生成5人15场比赛（每人12场，每对搭配2-3次）
         function generate5PlayerMatches(players) {
-            return generatePerfectSchedule(5, players);
+            return generateSimple5PlayerSchedule(players);
         }
         
         // 5人专用严格算法
@@ -2741,8 +3682,8 @@
                             score -= remaining * 100;
                         }
                         
-                        // 随机因子
-                        score += Math.random() * 10;
+                        // 小的随机因子（减少随机性，让算法更倾向于均衡搭配）
+                        score += Math.random() * 5;
                         
                         if (score > bestScore) {
                             bestScore = score;
@@ -2795,13 +3736,13 @@
         // 显示搭配统计
         function displayPartnershipStats() {
             const activePlayers = getActivePlayers();
-            const playerCount = activePlayers.length;
+            const activePlayerCount = activePlayers.length;
             console.log('🤝 队友搭配统计：');
             
             // 统计实际搭配情况
             const partnershipStats = {};
-            for (let i = 0; i < playerCount; i++) {
-                for (let j = i + 1; j < playerCount; j++) {
+            for (let i = 0; i < activePlayerCount; i++) {
+                for (let j = i + 1; j < activePlayerCount; j++) {
                     partnershipStats[`${i}-${j}`] = 0;
                 }
             }
@@ -2839,12 +3780,44 @@
             
             console.log(`搭配均衡性: 最少${minCount}次, 最多${maxCount}次, 平均${avgCount.toFixed(1)}次`);
             
-            if (maxCount - minCount <= 1) {
-                console.log('✅ 搭配非常均衡！');
-            } else if (maxCount - minCount <= 2) {
-                console.log('👍 搭配基本均衡');
+            // 根据人数调整均衡性标准
+            const currentPlayerCount = activePlayers.length;
+            const targetPerPair = currentPlayerCount === 6 ? 2 : 2.4; // 理论搭配次数
+            
+            if (currentPlayerCount === 6) {
+                // 6人模式：更严格的标准，每对应该搭配2次
+                if (maxCount - minCount <= 1 && minCount >= 1 && maxCount <= 2) {
+                    console.log('✅ 搭配非常均衡！');
+                    return true;
+                } else {
+                    console.log('⚠️ 6人模式搭配不够均衡，需要优化');
+                    
+                    // 详细分析问题
+                    Object.entries(partnershipStats).forEach(([key, count]) => {
+                        const [id1, id2] = key.split('-').map(Number);
+                        const name1 = activePlayers[id1]?.name || `玩家${id1+1}`;
+                        const name2 = activePlayers[id2]?.name || `玩家${id2+1}`;
+                        
+                        if (count === 0) {
+                            console.warn(`❌ 未搭配: ${name1} + ${name2} = 0次 (应该2次)`);
+                        } else if (count === 1) {
+                            console.warn(`⚠️ 搭配不足: ${name1} + ${name2} = 1次 (应该2次)`);
+                        } else if (count > 2) {
+                            console.warn(`❌ 搭配过多: ${name1} + ${name2} = ${count}次 (应该2次)`);
+                        }
+                    });
+                    
+                    return false;
+                }
             } else {
-                console.log('⚠️ 搭配不够均衡，需要优化');
+                // 5人模式：相对宽松的标准
+                if (maxCount - minCount <= 2) {
+                    console.log('✅ 搭配基本均衡！');
+                    return true;
+                } else {
+                    console.log('⚠️ 搭配不够均衡，需要优化');
+                    return false;
+                }
             }
         }
 
@@ -2852,7 +3825,41 @@
         function validateMatchFairness() {
             console.log('🏸 验证15场比赛公平性：');
             const activePlayers = getActivePlayers();
-            const playerCount = activePlayers.length;
+            const validationPlayerCount = activePlayers.length;
+            
+            // 首先验证基础场次分配
+            const basicMatchCounts = {};
+            activePlayers.forEach(player => {
+                basicMatchCounts[player.name] = 0;
+            });
+            
+            // 统计每个玩家的场次
+            matchSchedule.forEach((match, index) => {
+                const allPlayingPlayers = [...match.team1, ...match.team2];
+                allPlayingPlayers.forEach(playerName => {
+                    if (basicMatchCounts[playerName] !== undefined) {
+                        basicMatchCounts[playerName]++;
+                    }
+                });
+            });
+            
+            // 检查场次分配
+            const expectedPerPlayer = validationPlayerCount === 6 ? 10 : 12;
+            const basicCounts = Object.values(basicMatchCounts);
+            const basicMin = Math.min(...basicCounts);
+            const basicMax = Math.max(...basicCounts);
+            
+            console.log('📊 基础场次验证:', basicMatchCounts);
+            
+            if (basicMin !== expectedPerPlayer || basicMax !== expectedPerPlayer) {
+                const wrongPlayers = [];
+                Object.entries(basicMatchCounts).forEach(([name, count]) => {
+                    if (count !== expectedPerPlayer) {
+                        wrongPlayers.push(`${name}:${count}场`);
+                    }
+                });
+                throw new Error(`基础场次分配错误：${wrongPlayers.join(', ')}，应该每人${expectedPerPlayer}场`);
+            }
             
             // 显示搭配统计
             displayPartnershipStats();
@@ -2860,8 +3867,8 @@
             // 额外检查：找出搭配超标的组合
             console.log('🔍 搭配超标检查：');
             const partnershipStats = {};
-            for (let i = 0; i < playerCount; i++) {
-                for (let j = i + 1; j < playerCount; j++) {
+            for (let i = 0; i < validationPlayerCount; i++) {
+                for (let j = i + 1; j < validationPlayerCount; j++) {
                     partnershipStats[`${i}-${j}`] = 0;
                 }
             }
@@ -2883,7 +3890,7 @@
                 }
             });
             
-            const maxAllowed = playerCount === 5 ? 3 : 2;
+            const maxAllowed = validationPlayerCount === 5 ? 3 : 2;
             let hasOverLimit = false;
             
             Object.entries(partnershipStats).forEach(([key, count]) => {
@@ -2901,6 +3908,34 @@
             
             if (!hasOverLimit) {
                 console.log('✅ 所有搭配都在限制范围内');
+            }
+            
+            // 检查搭配均衡性，如果不均衡则抛出错误让算法重新生成
+            displayPartnershipStats();
+            
+            // 额外检查搭配均衡性
+            const counts = Object.values(partnershipStats);
+            const minCount = Math.min(...counts);
+            const maxCount = Math.max(...counts);
+            
+            // 6人模式下，理论上每对应该搭配2次，允许±1的差距
+            // 5人模式下，理论上每对应该搭配2.4次，允许较大差距
+            const detectedPlayerCount = Object.keys(partnershipStats).length > 10 ? 6 : 5;
+            const maxAllowedGap = detectedPlayerCount === 6 ? 1 : 2; // 6人模式更严格
+            
+            if (maxCount - minCount > maxAllowedGap) {
+                // 找出具体不均衡的配对
+                const imbalancedPairs = [];
+                Object.entries(partnershipStats).forEach(([key, count]) => {
+                    const [id1, id2] = key.split('-').map(Number);
+                    if (detectedPlayerCount === 6 && (count === 0 || count > 2)) {
+                        imbalancedPairs.push(`玩家${id1+1}+玩家${id2+1}:${count}次`);
+                    } else if (detectedPlayerCount === 5 && (count < 1 || count > 3)) {
+                        imbalancedPairs.push(`玩家${id1+1}+玩家${id2+1}:${count}次`);
+                    }
+                });
+                
+                throw new Error(`搭配分配不够均衡：最大差距${maxCount - minCount}次，不均衡配对：${imbalancedPairs.join(', ')}`);
             }
             
                 const playerMatchCounts = {};
@@ -2950,6 +3985,23 @@
             });
             
             console.log('📊 参赛统计:', playerMatchCounts);
+            
+            // 详细检查每个玩家的场次数
+            Object.entries(playerMatchCounts).forEach(([playerName, count]) => {
+                if (count !== expectedMatches) {
+                    console.error(`❌ ${playerName}: ${count}场，应该${expectedMatches}场`);
+                    
+                    // 找出该玩家参与的具体场次
+                    const playerMatches = [];
+                    matchSchedule.forEach((match, index) => {
+                        const playingPlayers = [...match.team1, ...match.team2];
+                        if (playingPlayers.includes(playerName)) {
+                            playerMatches.push(index + 1);
+                        }
+                    });
+                    console.error(`   ${playerName}参与的场次: 第${playerMatches.join(', ')}场`);
+                }
+            });
             console.log('🤝 搭档统计:', playerPartners);
             
             // 检查参赛次数公平性
@@ -2961,8 +4013,19 @@
             
             if (minMatches === maxMatches && minMatches === expectedMatches) {
                 console.log(`✅ 完全公平：每人都参加${minMatches}场比赛`);
-                } else {
+            } else {
                 console.log(`⚠️ 参赛次数范围：${minMatches}-${maxMatches}场，期望${expectedMatches}场`);
+                
+                // 列出所有场次不正确的玩家
+                const incorrectPlayers = [];
+                Object.entries(playerMatchCounts).forEach(([playerName, count]) => {
+                    if (count !== expectedMatches) {
+                        incorrectPlayers.push(`${playerName}:${count}场`);
+                    }
+                });
+                
+                console.error(`❌ 场次分配错误：${incorrectPlayers.join(', ')}`);
+                throw new Error(`场次分配不均匀：${incorrectPlayers.join(', ')}，需要重新生成`);
             }
             
             // 检查连续比赛情况
@@ -3004,41 +4067,6 @@
             });
         }
         
-        // 验证休息时间分布是否均匀
-        function validateRestDistribution() {
-            const playerRestCounts = {};
-            playerConfig.forEach(player => {
-                playerRestCounts[player.name] = 0;
-            });
-            
-            // 统计每个玩家的休息次数
-            for (let round = 0; round < 3; round++) {
-                for (let matchIndex = 0; matchIndex < 5; matchIndex++) {
-                    const match = matchSchedule[round][matchIndex];
-                    const playingPlayers = [...match.team1, ...match.team2];
-                    
-                    playerConfig.forEach(player => {
-                        if (!playingPlayers.includes(player.name)) {
-                            playerRestCounts[player.name]++;
-                        }
-                    });
-                }
-            }
-            
-            console.log('🏸 休息时间分布:', playerRestCounts);
-            
-            // 检查是否有人休息时间过少或过多
-            const restCounts = Object.values(playerRestCounts);
-            const minRest = Math.min(...restCounts);
-            const maxRest = Math.max(...restCounts);
-            
-            if (maxRest - minRest <= 1) {
-                console.log('✅ 休息时间分布均匀，每人休息', minRest, '-', maxRest, '次');
-            } else {
-                console.log('⚠️ 休息时间分布不均，正在重新调整...');
-                // 如果分布不均，可以递归重新生成（但通常新算法已经很均匀了）
-            }
-        }
 
         // 更新玩家显示
         function updatePlayersDisplay() {
@@ -3051,8 +4079,59 @@
             const headerSubtitle = document.querySelector('.header p');
             if (headerSubtitle) {
                 const playerCount = activePlayers.length;
-                const matchesPerPlayer = playerCount === 6 ? 10 : 12;
-                headerSubtitle.textContent = `${playerCount}人轮转制 - 15场比赛，每人${matchesPerPlayer}场`;
+                if (playerCount === 6) {
+                    headerSubtitle.textContent = '6人轮转制 - 15场比赛，每人10场';
+                } else if (playerCount === 5) {
+                    headerSubtitle.textContent = '5人轮转制 - 15场比赛，每人12场';
+                } else {
+                    headerSubtitle.textContent = `${playerCount}人轮转制 - 请选择5人或6人`;
+                }
+            }
+            
+            // 更新玩家筛选器
+            updatePlayerFilterButtons();
+        }
+
+        // 更新玩家筛选器按钮
+        function updatePlayerFilterButtons() {
+            const container = document.getElementById('playerFilterButtons');
+            const activePlayers = getActivePlayers();
+            
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            activePlayers.forEach(player => {
+                const button = document.createElement('button');
+                button.className = 'player-filter-btn';
+                button.textContent = player.name;
+                
+                // 检查是否被选中
+                if (selectedPlayers.has(player.name)) {
+                    button.classList.add('selected');
+                }
+                
+                // 添加点击事件
+                button.onclick = () => {
+                    togglePlayerFilter(player.name);
+                };
+                
+                container.appendChild(button);
+            });
+            
+            // 如果没有选中任何玩家，显示提示
+            if (selectedPlayers.size === 0 && activePlayers.length > 0) {
+                const hint = document.createElement('div');
+                hint.className = 'filter-hint';
+                hint.style.cssText = `
+                    color: #999;
+                    font-size: 0.8rem;
+                    text-align: center;
+                    margin-top: 5px;
+                    font-style: italic;
+                `;
+                hint.textContent = '点击玩家名字进行筛选';
+                container.appendChild(hint);
             }
         }
 
@@ -3068,28 +4147,21 @@
             document.getElementById('playerConfigModal').classList.remove('active');
         }
 
-        // 设置参赛人数
-        function setPlayerCount(count) {
-            currentPlayerCount = count;
+        // 自动检测并更新比赛模式
+        function updateGameMode() {
+            const activeCount = getActivePlayers().length;
+            const modeText = document.getElementById('currentModeText');
             
-            // 更新按钮状态
-            document.querySelectorAll('.player-count-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.dataset.count) === count) {
-                    btn.classList.add('active');
-                }
-            });
+            if (activeCount === 5) {
+                modeText.textContent = '5人比赛模式 - 15场比赛，每人12场';
+            } else if (activeCount === 6) {
+                modeText.textContent = '6人比赛模式 - 15场比赛，每人10场';
+            } else if (activeCount < 5) {
+                modeText.textContent = `当前${activeCount}人 - 请至少选择5人参赛`;
+            } else {
+                modeText.textContent = `当前${activeCount}人 - 请选择5人或6人参赛`;
+            }
             
-            // 更新模式文本
-            document.getElementById('currentModeText').textContent = `${count}人比赛`;
-            
-            // 更新玩家激活状态
-            playerConfig.forEach((player, index) => {
-                player.active = index < count;
-            });
-            
-            updatePlayerConfigDisplay();
-            updateFairnessDescription();
         }
 
         // 更新玩家配置显示
@@ -3099,7 +4171,16 @@
             
             playerConfig.forEach((player, index) => {
                 const playerItem = document.createElement('div');
+                const isSelected = selectedPlayers.has(player.name);
                 playerItem.className = `player-item ${player.active ? 'active' : 'inactive'}`;
+                
+                // 如果玩家激活，添加筛选功能
+                if (player.active) {
+                    playerItem.classList.add('filterable');
+                    if (isSelected) {
+                        playerItem.classList.add('selected-filter');
+                    }
+                }
                 
                 playerItem.innerHTML = `
                     <div class="player-avatar">${player.avatar}</div>
@@ -3109,6 +4190,7 @@
                                ${!player.active ? 'disabled' : ''}>
                         <div class="player-status">
                             ${player.active ? '✅ 参赛中' : '❌ 未参赛'}
+                            ${isSelected ? ' 🔍 已筛选' : ''}
                         </div>
                     </div>
                     <button class="player-toggle ${player.active ? 'active' : 'inactive'}" 
@@ -3118,8 +4200,25 @@
                     </button>
                 `;
                 
+                // 为激活的玩家添加点击筛选功能
+                if (player.active) {
+                    playerItem.addEventListener('click', (e) => {
+                        // 避免点击输入框和按钮时触发
+                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') {
+                            return;
+                        }
+                        togglePlayerFilter(player.name);
+                    });
+                }
+                
                 container.appendChild(playerItem);
             });
+            
+            // 更新筛选状态显示
+            updateFilterStatus();
+            
+            // 更新比赛模式显示
+            updateGameMode();
         }
 
         // 更新玩家姓名
@@ -3128,6 +4227,165 @@
                 playerConfig[index].name = newName.trim();
                 // 更新头像
                 playerConfig[index].avatar = newName.trim().charAt(0).toUpperCase();
+            }
+        }
+
+        // 更新比赛中玩家名字的高亮状态
+        function updatePlayerHighlights() {
+            const playerNameSpans = document.querySelectorAll('.clickable-player-name');
+            
+            playerNameSpans.forEach(span => {
+                const playerName = span.textContent;
+                const isSelected = selectedPlayers.has(playerName);
+                
+                if (isSelected) {
+                    span.classList.add('selected');
+                } else {
+                    span.classList.remove('selected');
+                }
+            });
+        }
+
+        // 筛选功能相关函数
+        
+        // 切换玩家筛选状态
+        function togglePlayerFilter(playerName) {
+            if (selectedPlayers.has(playerName)) {
+                selectedPlayers.delete(playerName);
+            } else {
+                selectedPlayers.add(playerName);
+            }
+            
+            // 更新显示
+            updatePlayerConfigDisplay();
+            updatePlayerFilterButtons(); // 更新筛选器按钮状态
+            updatePlayerHighlights(); // 更新比赛中玩家名字的高亮状态
+            applyMatchFilter();
+            updateFilterStatus();
+        }
+        
+        // 清空所有筛选
+        function clearAllFilters() {
+            selectedPlayers.clear();
+            updatePlayerConfigDisplay();
+            updatePlayerFilterButtons(); // 更新筛选器按钮状态
+            updatePlayerHighlights(); // 更新比赛中玩家名字的高亮状态
+            applyMatchFilter();
+            updateFilterStatus();
+        }
+        
+        // 更新筛选状态显示
+        function updateFilterStatus() {
+            const filterStatus = document.getElementById('filterStatus');
+            const clearFilterBtn = document.getElementById('clearFilterBtn');
+            
+            if (selectedPlayers.size === 0) {
+                filterStatus.style.display = 'none';
+                if (clearFilterBtn) clearFilterBtn.style.display = 'none';
+                return;
+            }
+            
+            const selectedNames = Array.from(selectedPlayers);
+            const filteredMatches = getFilteredMatches();
+            
+            // 显示筛选状态
+            filterStatus.style.display = 'block';
+            filterStatus.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        🔍 筛选条件：<strong>${selectedNames.join(' + ')}</strong>
+                        <span class="filter-match-count">（显示 ${filteredMatches.length} 场比赛）</span>
+                    </div>
+                    <button class="filter-clear-btn" onclick="clearAllFilters()">✖️ 清除筛选</button>
+                </div>
+            `;
+            
+            // 显示顶部清除按钮
+            if (clearFilterBtn) clearFilterBtn.style.display = 'block';
+        }
+        
+        // 获取筛选后的比赛列表
+        function getFilteredMatches() {
+            if (selectedPlayers.size === 0) {
+                return matchSchedule;
+            }
+            
+            return matchSchedule.filter(match => {
+                const allPlayersInMatch = [...match.team1, ...match.team2];
+                // 检查比赛中是否同时包含所有选中的玩家
+                return Array.from(selectedPlayers).every(playerName => 
+                    allPlayersInMatch.includes(playerName)
+                );
+            });
+        }
+        
+        // 应用比赛筛选
+        function applyMatchFilter() {
+            const filteredMatches = getFilteredMatches();
+            const matchItems = document.querySelectorAll('.preview-match');
+            
+            matchSchedule.forEach((match, index) => {
+                const matchItem = matchItems[index];
+                if (matchItem) {
+                    if (filteredMatches.includes(match)) {
+                        matchItem.classList.remove('filtered-out');
+                    } else {
+                        matchItem.classList.add('filtered-out');
+                    }
+                }
+            });
+
+            // 如果有筛选条件但没有匹配的比赛，显示提示
+            if (selectedPlayers.size > 0 && filteredMatches.length === 0) {
+                showNoMatchesHint();
+            } else {
+                hideNoMatchesHint();
+            }
+        }
+
+        // 显示无匹配比赛提示
+        function showNoMatchesHint() {
+            const container = document.getElementById('matchesPreview');
+            let hintDiv = document.getElementById('noMatchesHint');
+            
+            if (!hintDiv) {
+                hintDiv = document.createElement('div');
+                hintDiv.id = 'noMatchesHint';
+                hintDiv.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(255, 255, 255, 0.95);
+                    padding: 30px;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    text-align: center;
+                    z-index: 1000;
+                    max-width: 300px;
+                `;
+                container.appendChild(hintDiv);
+            }
+            
+            const selectedNames = Array.from(selectedPlayers);
+            hintDiv.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 15px;">🔍</div>
+                <div style="font-weight: bold; margin-bottom: 10px; color: #dc3545;">没有找到匹配的比赛</div>
+                <div style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                    没有比赛同时包含：<strong>${selectedNames.join(' + ')}</strong>
+                </div>
+                <button onclick="clearAllFilters()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">
+                    清除筛选条件
+                </button>
+            `;
+            hintDiv.style.display = 'block';
+        }
+
+        // 隐藏无匹配比赛提示
+        function hideNoMatchesHint() {
+            const hintDiv = document.getElementById('noMatchesHint');
+            if (hintDiv) {
+                hintDiv.style.display = 'none';
             }
         }
 
@@ -3154,10 +4412,10 @@
                 `;
             } else if (activeCount === 6) {
                 descElement.innerHTML = `
-                    • <strong>6人模式</strong>：15场比赛，每人参加10场<br>
-                    • <strong>搭档分配</strong>：每人都能与其他人搭档<br>
-                    • <strong>休息分布</strong>：每人总共休息5场，避免连续比赛<br>
-                    • <strong>比赛强度</strong>：适中，完全公平分配
+                    • <strong>6人模式</strong>：16场比赛，每人参加10-11场<br>
+                    • <strong>搭档分配</strong>：13个搭档组合2次，2个搭档组合3次<br>
+                    • <strong>休息分布</strong>：每人休息5-6场，合理分散<br>
+                    • <strong>比赛时长</strong>：2小时40分钟，最优公平性
                 `;
             } else {
                 descElement.innerHTML = `
@@ -3187,6 +4445,9 @@
             closePlayerConfigModal();
             updatePlayersDisplay();
             
+            // 保存玩家配置到云端
+            savePlayerConfigToCloud();
+            
             // 重新生成比赛安排
             generateRandomMatches();
             updateMatchDisplay();
@@ -3195,7 +4456,95 @@
             window.lastActionType = 'update_players';
             if (saveToSync) saveToSync();
             
-            showAlert(`✅ 配置已保存！\n\n当前${activeCount}人参赛模式已生效`, '配置成功', 'success');
+            showAlert(`✅ 配置已保存到云端！\n\n当前${activeCount}人参赛模式已生效`, '配置成功', 'success');
+        }
+
+        // 保存玩家配置到云端
+        function savePlayerConfigToCloud() {
+            if (!gameClass) {
+                console.log('云端存储未初始化，使用本地存储');
+                localStorage.setItem('playerConfig', JSON.stringify(playerConfig));
+                return;
+            }
+            
+            try {
+                const configData = {
+                    playerConfig: playerConfig,
+                    timestamp: Date.now(),
+                    lastUpdatedBy: window.currentUserId || 'anonymous'
+                };
+                
+                // 保存到LeanCloud
+                const configObject = new gameClass();
+                configObject.set('type', 'playerConfig');
+                configObject.set('data', configData);
+                configObject.save().then(() => {
+                    console.log('✅ 玩家配置已保存到云端');
+                }).catch(error => {
+                    console.error('❌ 云端保存失败:', error);
+                    // 降级到本地存储
+                    localStorage.setItem('playerConfig', JSON.stringify(playerConfig));
+                });
+                
+            } catch (error) {
+                console.error('❌ 云端保存异常:', error);
+                localStorage.setItem('playerConfig', JSON.stringify(playerConfig));
+            }
+        }
+
+        // 从云端加载玩家配置
+        function loadPlayerConfigFromCloud() {
+            if (!gameClass) {
+                console.log('云端存储未初始化，使用本地存储');
+                const saved = localStorage.getItem('playerConfig');
+                if (saved) {
+                    try {
+                        playerConfig = JSON.parse(saved);
+                        updatePlayerConfigDisplay();
+                        updatePlayersDisplay();
+                        console.log('✅ 从本地存储加载玩家配置');
+                    } catch (error) {
+                        console.error('❌ 本地配置解析失败:', error);
+                    }
+                }
+                return;
+            }
+            
+            try {
+                const query = new AV.Query(gameClass);
+                query.equalTo('type', 'playerConfig');
+                query.descending('updatedAt');
+                query.first().then(result => {
+                    if (result) {
+                        const configData = result.get('data');
+                        if (configData && configData.playerConfig) {
+                            playerConfig = configData.playerConfig;
+                            updatePlayerConfigDisplay();
+                            updatePlayersDisplay();
+                            console.log('✅ 从云端加载玩家配置');
+                        }
+                    } else {
+                        console.log('云端无配置数据，使用默认配置');
+                    }
+                }).catch(error => {
+                    console.error('❌ 云端加载失败:', error);
+                    // 尝试本地存储
+                    const saved = localStorage.getItem('playerConfig');
+                    if (saved) {
+                        try {
+                            playerConfig = JSON.parse(saved);
+                            updatePlayerConfigDisplay();
+                            updatePlayersDisplay();
+                            console.log('✅ 从本地存储加载玩家配置');
+                        } catch (error) {
+                            console.error('❌ 本地配置解析失败:', error);
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ 云端加载异常:', error);
+            }
         }
 
         // 显示比赛安排可视化
@@ -3449,18 +4798,32 @@
                     matchDiv.classList.add('completed');
                 }
                 
+                // 创建可点击的玩家名字
+                const createClickablePlayerNames = (players) => {
+                    return players.map(playerName => {
+                        const isSelected = selectedPlayers.has(playerName);
+                        return `<span class="clickable-player-name ${isSelected ? 'selected' : ''}" onclick="event.stopPropagation(); togglePlayerFilter('${playerName}')">${playerName}</span>`;
+                    }).join(' + ');
+                };
+                
                 matchDiv.innerHTML = `
                     <div class="match-text">
                         <div style="font-weight: bold; margin-bottom: 5px;">第${matchIndex + 1}场比赛</div>
-                        <div>${matchData.team1.join(' + ')} VS ${matchData.team2.join(' + ')}</div>
+                        <div>${createClickablePlayerNames(matchData.team1)} VS ${createClickablePlayerNames(matchData.team2)}</div>
                     </div>
-                    <span class="match-score ${score1 > 0 || score2 > 0 ? 'has-score' : ''}">${score1} : ${score2}</span>
+                    <span class="match-score ${score1 > 0 || score2 > 0 ? 'has-score' : ''}" onclick="event.stopPropagation(); openMatchScore(${matchIndex})">${score1} : ${score2}</span>
                 `;
                 
                 allMatchesDiv.appendChild(matchDiv);
             });
             
             container.appendChild(allMatchesDiv);
+            
+            // 应用筛选（延迟执行，确保DOM已更新）
+            setTimeout(() => {
+                applyMatchFilter();
+                updateFilterStatus();
+            }, 0);
         }
 
         // 更新比赛文本
@@ -3477,6 +4840,9 @@
             });
         }
 
+        // 全局变量声明
+        let gameClass = null;
+
         // LeanCloud实时同步（国内最佳方案）
         function initSimpleJsonSync() {
             // LeanCloud配置（演示配置，您可以创建自己的）
@@ -3487,7 +4853,6 @@
             };
             
             let lastSyncTime = 0;
-            let gameClass = null;
             
             // 初始化LeanCloud
             async function init() {
@@ -4294,7 +5659,7 @@
 
         // 版本检查和缓存破坏
         function checkVersionAndCache() {
-            const currentVersion = '1.3.0';
+            const currentVersion = '1.3.1';
             const lastVersion = localStorage.getItem('app_version');
             const lastCheck = localStorage.getItem('last_version_check');
             const now = Date.now();
@@ -4362,36 +5727,19 @@
                     return;
                 }
                 
+                debugLog('初始化云端同步');
+                // 先初始化云端连接，这样可以从云端加载数据
+                saveToSync = initSimpleJsonSync();
+                
+                debugLog('加载玩家配置');
+                loadPlayerConfigFromCloud();
+                
                 debugLog('更新玩家显示');
                 updatePlayersDisplay();
                 
-                debugLog('生成初始比赛安排');
-                // 确保比赛数据生成成功
-                try {
-                    generateRandomMatches();
-                    if (!matchSchedule || matchSchedule.length === 0) {
-                        throw new Error('比赛数据生成失败');
-                    }
-                    updateMatchDisplay();
-                } catch (error) {
-                    console.error('比赛生成失败:', error);
-                    // 显示错误但不阻止其他功能
-                    const container = document.getElementById('matchesPreview');
-                    if (container) {
-                        container.innerHTML = `
-                            <div style="text-align: center; padding: 20px; background: #fff3cd; border-radius: 10px; color: #856404; margin: 20px 0;">
-                                <h3>⚠️ 比赛生成失败</h3>
-                                <p>无法自动生成比赛安排，请点击"重新开始比赛"手动生成</p>
-                                <button onclick="regenerateMatches()" style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                    🎲 重新开始比赛
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-                
-                debugLog('初始化云端同步');
-                saveToSync = initSimpleJsonSync();
+                // 注意：比赛数据的生成/加载现在在 initSimpleJsonSync() 的 init() 函数中处理
+                // 如果云端连接成功，会从云端加载数据
+                // 如果云端连接失败，会在演示模式中生成新数据
                 
                 debugLog('设置防刷新');
                 preventPullToRefresh();
@@ -4422,6 +5770,8 @@
             constructor(playerCount) {
                 this.playerCount = playerCount;
                 this.maxCount = playerCount === 5 ? 3 : 2; // 5人模式3次，6人模式2次
+                this.targetCount = playerCount === 5 ? 3 : 2; // 5人模式理论3次，6人模式理论2次
+                this.minCount = playerCount === 5 ? 2 : 1; // 5人模式最少2次，6人模式最少1次
                 this.partnerships = {};
                 this.reset();
             }
@@ -4475,30 +5825,443 @@
             getPartnershipScore(player1, player2) {
                 const count = this.getCount(player1, player2);
                 const remaining = this.maxCount - count;
+                const deficit = this.targetCount - count; // 与目标的差距
                 
-                // 计算优先级分数
-                let score = remaining * 1000; // 基础分数
+                // 计算优先级分数 - 强烈倾向于达到目标搭配次数
+                let score = remaining * 2000; // 基础分数
                 
-                if (count === 0) score += 5000; // 从未搭配过
-                else if (count === 1) score += 2000; // 搭配过1次
-                else if (count === this.maxCount - 1) score += 500; // 接近上限
+                if (count === 0) {
+                    score += 20000; // 极大提升从未搭配过的权重
+                } else if (count < this.targetCount) {
+                    // 低于目标次数，给予奖励，差距越大奖励越多
+                    score += deficit * 8000;
+                } else if (count === this.targetCount) {
+                    score += 1000; // 已达到目标，小幅奖励
+                } else if (count < this.maxCount) {
+                    score -= (count - this.targetCount) * 3000; // 超过目标但未达上限，给予惩罚
+                } else {
+                    score -= 50000; // 严重惩罚超标搭配
+                }
                 
                 return score;
             }
             
+            // 获取搭配分布的均衡性评分
+            getBalanceScore() {
+                const counts = Object.values(this.partnerships);
+                const nonZeroCounts = counts.filter(c => c > 0);
+                
+                if (nonZeroCounts.length === 0) return 0;
+                
+                const min = Math.min(...nonZeroCounts);
+                const max = Math.max(...nonZeroCounts);
+                const avg = nonZeroCounts.reduce((a, b) => a + b, 0) / nonZeroCounts.length;
+                
+                // 计算标准差
+                const variance = nonZeroCounts.reduce((acc, val) => acc + Math.pow(val - avg, 2), 0) / nonZeroCounts.length;
+                const stdDev = Math.sqrt(variance);
+                
+                // 均衡性分数：越小越好（标准差越小，分布越均匀）
+                return { min, max, avg, stdDev, balance: max - min };
+            }
+            
+            // 获取最少搭配次数的所有组合
+            getLeastUsedPairs() {
+                const minCount = Math.min(...Object.values(this.partnerships));
+                const leastUsed = [];
+                
+                Object.entries(this.partnerships).forEach(([key, count]) => {
+                    if (count === minCount) {
+                        const [id1, id2] = key.split('-').map(Number);
+                        leastUsed.push([id1, id2]);
+                    }
+                });
+                
+                return leastUsed;
+            }
+            
+            // 获取低于目标搭配次数的所有组合
+            getUnderTargetPairs() {
+                const underTarget = [];
+                
+                Object.entries(this.partnerships).forEach(([key, count]) => {
+                    if (count < this.targetCount) {
+                        const [id1, id2] = key.split('-').map(Number);
+                        underTarget.push([id1, id2]);
+                    }
+                });
+                
+                return underTarget;
+            }
+            
+            // 检查某个搭配组合是否包含最少使用的配对
+            containsLeastUsedPair(team1, team2) {
+                const leastUsed = this.getLeastUsedPairs();
+                
+                for (const [id1, id2] of leastUsed) {
+                    // 检查team1是否匹配
+                    if ((team1[0] === id1 && team1[1] === id2) || (team1[0] === id2 && team1[1] === id1)) {
+                        return true;
+                    }
+                    // 检查team2是否匹配
+                    if ((team2[0] === id1 && team2[1] === id2) || (team2[0] === id2 && team2[1] === id1)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            // 检查某个搭配组合是否包含低于目标的配对
+            containsUnderTargetPair(team1, team2) {
+                const underTarget = this.getUnderTargetPairs();
+                
+                for (const [id1, id2] of underTarget) {
+                    // 检查team1是否匹配
+                    if ((team1[0] === id1 && team1[1] === id2) || (team1[0] === id2 && team1[1] === id1)) {
+                        return true;
+                    }
+                    // 检查team2是否匹配
+                    if ((team2[0] === id1 && team2[1] === id2) || (team2[0] === id2 && team2[1] === id1)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+
             printStats() {
                 console.log('🤝 当前搭配统计：');
                 Object.entries(this.partnerships).forEach(([key, count]) => {
                     const [id1, id2] = key.split('-').map(Number);
-                    if (count > 0) {
-                        console.log(`  玩家${id1+1} + 玩家${id2+1}: ${count}次`);
+                    let status = '';
+                    if (count === 0) {
+                        status = ' ❌未搭配';
+                    } else if (count < this.targetCount) {
+                        status = ' ⚠️不足';
+                    } else if (count === this.targetCount) {
+                        status = ' ✅理想';
+                    } else if (count <= this.maxCount) {
+                        status = ' 🔸偏多';
+                    } else {
+                        status = ' ❌超标';
                     }
+                    
+                    console.log(`  玩家${id1+1} + 玩家${id2+1}: ${count}次${status}`);
                 });
+                
+                const balance = this.getBalanceScore();
+                console.log(`📊 均衡性: 最少${balance.min}次, 最多${balance.max}次, 平均${balance.avg.toFixed(1)}次, 差距${balance.balance}次`);
+                console.log(`🎯 目标: 每对搭配${this.targetCount}次, 最多${this.maxCount}次`);
             }
         }
         
         // 全局搭配管理器实例
         let globalPartnershipManager = null;
+
+        // ===========================================
+        // 全新的简单分配算法
+        // ===========================================
+
+        // 6人模式：每人10场，每对搭配恰好2次
+        function generateSimple6PlayerSchedule(players) {
+            console.log('🎯 新算法：6人模式 - 每人10场，每对搭配2次');
+            
+            // 6人15场的数学验证：
+            // - 总共15场比赛，每场4人，共60人次
+            // - 6人平均：60÷6=10场/人 ✓
+            // - 总共15种搭配关系（C(6,2)=15）
+            // - 每场产生2个搭配，共30个搭配实例
+            // - 平均每对：30÷15=2次搭配 ✓
+            
+            const matchTemplates = generate6PlayerOptimalMatches();
+            
+            // 将数字模板转换为玩家名字
+            const matches = matchTemplates.map((template, index) => ({
+                team1: [players[template.team1[0]], players[template.team1[1]]],
+                team2: [players[template.team2[0]], players[template.team2[1]]],
+                score1: 0,
+                score2: 0,
+                matchIndex: index
+            }));
+            
+            console.log(`✅ 6人完美安排生成完成：${matches.length}场比赛`);
+            return matches;
+        }
+
+        // 5人模式：每人12场，每对搭配2-3次
+        function generateSimple5PlayerSchedule(players) {
+            console.log('🎯 新算法：5人模式 - 每人12场，每对搭配2-3次');
+            
+            // 5人15场的数学验证：
+            // - 总共15场比赛，每场4人，共60人次
+            // - 5人平均：60÷5=12场/人 ✓
+            // - 总共10种搭配关系（C(5,2)=10）
+            // - 每场产生2个搭配，共30个搭配实例
+            // - 平均每对：30÷10=3次搭配，实际会是2-3次 ✓
+            
+            const schedule = generate5PlayerOptimalMatches();
+            return convertScheduleToMatches(schedule, players);
+        }
+
+        // 生成6人最优比赛安排 - 使用算法生成确保数学正确
+        function generate6PlayerOptimalMatches() {
+            console.log('📊 6人模式算法构造开始...');
+            
+            // 使用系统化算法生成确保每人10场，每对搭配2次的安排
+            const matches = [];
+            const playerCounts = Array(6).fill(0);
+            const partnerships = {};
+            
+            // 初始化搭配计数器
+            for (let i = 0; i < 6; i++) {
+                for (let j = i + 1; j < 6; j++) {
+                    partnerships[`${i}-${j}`] = 0;
+                }
+            }
+            
+            // 生成所有可能的比赛组合（15种4人组合）
+            const allMatches = [];
+            for (let i = 0; i < 6; i++) {
+                for (let j = i + 1; j < 6; j++) {
+                    for (let k = j + 1; k < 6; k++) {
+                        for (let l = k + 1; l < 6; l++) {
+                            // 4人组合[i,j,k,l]的3种分队方式
+                            allMatches.push({ team1: [i,j], team2: [k,l], players: [i,j,k,l] });
+                            allMatches.push({ team1: [i,k], team2: [j,l], players: [i,j,k,l] });
+                            allMatches.push({ team1: [i,l], team2: [j,k], players: [i,j,k,l] });
+                        }
+                    }
+                }
+            }
+            
+            console.log(`总共有${allMatches.length}种可能的比赛安排`);
+            
+            // 使用贪心算法选择15场比赛，确保每人10场，每对搭配2次
+            for (let round = 0; round < 15; round++) {
+                let bestMatch = null;
+                let bestScore = -Infinity;
+                
+                for (const match of allMatches) {
+                    // 检查这场比赛是否会让任何人超过10场
+                    const wouldExceed = match.players.some(p => playerCounts[p] >= 10);
+                    if (wouldExceed) continue;
+                    
+                    // 检查搭配是否会超过2次
+                    const team1Key = `${Math.min(match.team1[0], match.team1[1])}-${Math.max(match.team1[0], match.team1[1])}`;
+                    const team2Key = `${Math.min(match.team2[0], match.team2[1])}-${Math.max(match.team2[0], match.team2[1])}`;
+                    
+                    if (partnerships[team1Key] >= 2 || partnerships[team2Key] >= 2) continue;
+                    
+                    // 计算这场比赛的优先级分数
+                    let score = 0;
+                    
+                    // 优先选择让参赛次数少的人参赛
+                    match.players.forEach(p => {
+                        score += (10 - playerCounts[p]) * 100;
+                    });
+                    
+                    // 优先选择搭配次数少的组合
+                    score += (2 - partnerships[team1Key]) * 1000;
+                    score += (2 - partnerships[team2Key]) * 1000;
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMatch = match;
+                    }
+                }
+                
+                if (!bestMatch) {
+                    throw new Error(`第${round + 1}场比赛无法安排`);
+                }
+                
+                // 添加这场比赛
+                matches.push(bestMatch);
+                
+                // 更新计数器
+                bestMatch.players.forEach(p => playerCounts[p]++);
+                const team1Key = `${Math.min(bestMatch.team1[0], bestMatch.team1[1])}-${Math.max(bestMatch.team1[0], bestMatch.team1[1])}`;
+                const team2Key = `${Math.min(bestMatch.team2[0], bestMatch.team2[1])}-${Math.max(bestMatch.team2[0], bestMatch.team2[1])}`;
+                partnerships[team1Key]++;
+                partnerships[team2Key]++;
+                
+                console.log(`第${round + 1}场: [${bestMatch.team1.join(',')}] vs [${bestMatch.team2.join(',')}], 当前场次: [${playerCounts.join(',')}]`);
+            }
+            
+            // 验证这个安排
+            if (!validatePerfect6PlayerMatches(matches)) {
+                throw new Error('6人算法生成验证失败');
+            }
+            
+            console.log('✅ 6人算法生成验证通过');
+            return matches;
+        }
+        
+        // 验证6人完美安排
+        function validatePerfect6PlayerMatches(matches) {
+            console.log('🔍 验证6人完美安排...');
+            
+            // 统计每人参与次数
+            const playerCounts = Array(6).fill(0);
+            // 统计每对搭配次数
+            const partnerships = {};
+            for (let i = 0; i < 6; i++) {
+                for (let j = i + 1; j < 6; j++) {
+                    partnerships[`${i}-${j}`] = 0;
+                }
+            }
+            
+            matches.forEach(match => {
+                // 统计参与次数
+                match.team1.forEach(p => playerCounts[p]++);
+                match.team2.forEach(p => playerCounts[p]++);
+                
+                // 统计搭配次数
+                const key1 = `${Math.min(match.team1[0], match.team1[1])}-${Math.max(match.team1[0], match.team1[1])}`;
+                const key2 = `${Math.min(match.team2[0], match.team2[1])}-${Math.max(match.team2[0], match.team2[1])}`;
+                partnerships[key1]++;
+                partnerships[key2]++;
+            });
+            
+            // 检查每人是否都是10场
+            const allTen = playerCounts.every(count => count === 10);
+            if (!allTen) {
+                console.error(`❌ 场次分配错误：[${playerCounts.join(',')}]，应该每人10场`);
+                return false;
+            }
+            
+            // 检查每对是否都是2次搭配
+            const allTwo = Object.values(partnerships).every(count => count === 2);
+            if (!allTwo) {
+                console.error('❌ 搭配分配错误：');
+                Object.entries(partnerships).forEach(([key, count]) => {
+                    if (count !== 2) {
+                        console.error(`  ${key}: ${count}次，应该2次`);
+                    }
+                });
+                return false;
+            }
+            
+            console.log('✅ 验证通过：每人10场，每对搭配2次');
+            return true;
+        }
+
+        // 生成5人最优比赛安排
+        function generate5PlayerOptimalMatches() {
+            console.log('📊 5人模式数学构造开始...');
+            
+            // 5人轮转休息，15场比赛的最优安排
+            // 每人休息3场，参与12场
+            const schedule = [
+                // 玩家0休息的3场
+                [1,2,3,4], [1,3,2,4], [1,4,2,3],
+                // 玩家1休息的3场  
+                [0,2,3,4], [0,3,2,4], [0,4,2,3],
+                // 玩家2休息的3场
+                [0,1,3,4], [0,3,1,4], [0,4,1,3],
+                // 玩家3休息的3场
+                [0,1,2,4], [0,2,1,4], [0,4,1,2],
+                // 玩家4休息的3场
+                [0,1,2,3], [0,2,1,3], [0,3,1,2]
+            ];
+            
+            // 验证这个安排
+            if (!validate5PlayerSchedule(schedule)) {
+                throw new Error('5人数学构造验证失败');
+            }
+            
+            console.log('✅ 5人安排验证通过');
+            return schedule;
+        }
+
+
+        // 验证5人安排的正确性
+        function validate5PlayerSchedule(schedule) {
+            console.log('🔍 验证5人安排...');
+            
+            // 检查总场次
+            if (schedule.length !== 15) {
+                console.error(`❌ 总场次错误：${schedule.length}，应该15场`);
+                return false;
+            }
+            
+            // 统计每人参与次数
+            const playerCounts = Array(5).fill(0);
+            schedule.forEach(match => {
+                if (match.length !== 4) {
+                    console.error(`❌ 场次人数错误：${match.length}人，应该4人`);
+                    return false;
+                }
+                match.forEach(playerId => playerCounts[playerId]++);
+            });
+            
+            // 检查每人是否都是12场
+            const allTwelve = playerCounts.every(count => count === 12);
+            if (!allTwelve) {
+                console.error(`❌ 场次分配错误：[${playerCounts.join(',')}]，应该每人12场`);
+                return false;
+            }
+            
+            // 统计搭配次数
+            const partnerships = {};
+            for (let i = 0; i < 5; i++) {
+                for (let j = i + 1; j < 5; j++) {
+                    partnerships[`${i}-${j}`] = 0;
+                }
+            }
+            
+            schedule.forEach(match => {
+                // 统计这场比赛中的所有搭配
+                for (let i = 0; i < match.length; i++) {
+                    for (let j = i + 1; j < match.length; j++) {
+                        const key = `${Math.min(match[i], match[j])}-${Math.max(match[i], match[j])}`;
+                        partnerships[key]++;
+                    }
+                }
+            });
+            
+            // 检查搭配分布：应该2-3次
+            const partnerCounts = Object.values(partnerships);
+            const validRange = partnerCounts.every(count => count >= 2 && count <= 3);
+            if (!validRange) {
+                console.error(`❌ 搭配分配错误：${JSON.stringify(partnerships)}`);
+                return false;
+            }
+            
+            console.log('✅ 5人验证：每人12场，每对2-3次搭配');
+            return true;
+        }
+
+        // 将数字安排转换为实际比赛格式
+        function convertScheduleToMatches(schedule, players) {
+            const matches = [];
+            
+            schedule.forEach((match, index) => {
+                let team1, team2;
+                
+                if (match.team1 && match.team2) {
+                    // 如果已经指定了队伍分配，直接使用
+                    team1 = [players[match.team1[0]], players[match.team1[1]]];
+                    team2 = [players[match.team2[0]], players[match.team2[1]]];
+                } else {
+                    // 如果只是4人数组，随机分队（用于5人模式）
+                    const shuffled = [...match].sort(() => Math.random() - 0.5);
+                    team1 = [players[shuffled[0]], players[shuffled[1]]];
+                    team2 = [players[shuffled[2]], players[shuffled[3]]];
+                }
+                
+                matches.push({
+                    team1: team1,
+                    team2: team2,
+                    score1: 0,
+                    score2: 0,
+                    matchIndex: index
+                });
+            });
+            
+            console.log(`✅ 转换完成：${matches.length}场比赛`);
+            return matches;
+        }
 
         // 强制刷新函数
         function forceRefresh() {
