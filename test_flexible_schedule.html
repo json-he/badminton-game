@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵活赛程生成器测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        .controls label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        .controls select, .controls input {
+            padding: 5px 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .match-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .match-item {
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .player-stat {
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 灵活赛程生成器测试</h1>
+        
+        <div class="test-section">
+            <h3>测试配置</h3>
+            <div class="controls">
+                <label>玩家数量:</label>
+                <select id="playerCount">
+                    <option value="5">5人</option>
+                    <option value="6" selected>6人</option>
+                    <option value="7">7人</option>
+                    <option value="8">8人</option>
+                </select>
+            </div>
+            <div class="controls">
+                <label>最大连续比赛:</label>
+                <select id="maxConsecutive">
+                    <option value="1">1场 (最严格)</option>
+                    <option value="2" selected>2场 (推荐)</option>
+                    <option value="3">3场 (宽松)</option>
+                </select>
+            </div>
+            <div class="controls">
+                <label>最大连续休息:</label>
+                <select id="maxRest">
+                    <option value="2">2场</option>
+                    <option value="3">3场</option>
+                    <option value="4" selected>4场 (推荐)</option>
+                    <option value="5">5场</option>
+                </select>
+            </div>
+            <div class="controls">
+                <label>
+                    <input type="checkbox" id="preferEven" checked>
+                    优先均匀分布
+                </label>
+            </div>
+            <button onclick="runTest()">🚀 运行测试</button>
+            <button onclick="runMultipleTests()">🔄 批量测试 (10次)</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>测试结果</h3>
+            <div id="results" class="results">点击"运行测试"开始...</div>
+        </div>
+    </div>
+
+    <script src="flexible_schedule.js"></script>
+    <script>
+        function generateTestPlayers(count) {
+            const names = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十'];
+            return names.slice(0, count);
+        }
+        
+        function runTest() {
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            const maxConsecutive = parseInt(document.getElementById('maxConsecutive').value);
+            const maxRest = parseInt(document.getElementById('maxRest').value);
+            const preferEven = document.getElementById('preferEven').checked;
+            
+            const players = generateTestPlayers(playerCount);
+            const options = {
+                maxConsecutiveMatches: maxConsecutive,
+                maxConsecutiveRests: maxRest,
+                preferEvenDistribution: preferEven,
+                allowFlexibleRest: true,
+                maxAttempts: 1000
+            };
+            
+            console.log('🎯 开始测试:', { playerCount, options });
+            
+            const startTime = Date.now();
+            const generator = new FlexibleScheduleGenerator(options);
+            const matches = generator.generateSchedule(players);
+            const endTime = Date.now();
+            
+            displayResults(matches, players, options, endTime - startTime);
+        }
+        
+        function runMultipleTests() {
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            const maxConsecutive = parseInt(document.getElementById('maxConsecutive').value);
+            const maxRest = parseInt(document.getElementById('maxRest').value);
+            const preferEven = document.getElementById('preferEven').checked;
+            
+            const players = generateTestPlayers(playerCount);
+            const options = {
+                maxConsecutiveMatches: maxConsecutive,
+                maxConsecutiveRests: maxRest,
+                preferEvenDistribution: preferEven,
+                allowFlexibleRest: true,
+                maxAttempts: 1000
+            };
+            
+            console.log('🔄 开始批量测试:', { playerCount, options });
+            
+            const results = [];
+            const startTime = Date.now();
+            
+            for (let i = 0; i < 10; i++) {
+                const generator = new FlexibleScheduleGenerator(options);
+                const matches = generator.generateSchedule(players);
+                results.push(matches);
+            }
+            
+            const endTime = Date.now();
+            
+            displayBatchResults(results, players, options, endTime - startTime);
+        }
+        
+        function displayResults(matches, players, options, duration) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!matches || matches.length === 0) {
+                resultsDiv.innerHTML = '<span class="error">❌ 无法生成满足条件的赛程</span>';
+                return;
+            }
+            
+            let html = `<h4>✅ 测试成功完成 (耗时: ${duration}ms)</h4>`;
+            html += `<p><strong>配置:</strong> ${players.length}人, 最大连续${options.maxConsecutiveMatches}场, 最大休息${options.maxConsecutiveRests}场</p>`;
+            html += `<p><strong>生成场次:</strong> ${matches.length}场</p>`;
+            
+            // 显示比赛列表
+            html += '<h5>📋 比赛安排:</h5>';
+            html += '<div class="match-list">';
+            matches.forEach((match, index) => {
+                html += `
+                    <div class="match-item">
+                        <strong>第${index + 1}场:</strong><br>
+                        ${match.team1.join(' + ')} VS ${match.team2.join(' + ')}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            // 分析玩家统计
+            const playerStats = analyzePlayerStats(matches, players);
+            html += '<h5>📊 玩家统计:</h5>';
+            html += '<div class="player-stats">';
+            
+            playerStats.forEach((stats, index) => {
+                const playerName = players[index];
+                let statusClass = 'success';
+                let statusIcon = '✅';
+                
+                if (stats.consecutiveIssues > 0) {
+                    statusClass = 'warning';
+                    statusIcon = '⚠️';
+                }
+                
+                html += `
+                    <div class="player-stat">
+                        <strong>${statusIcon} ${playerName}</strong><br>
+                        总场次: ${stats.matchCount}<br>
+                        连续问题: ${stats.consecutiveIssues}个<br>
+                        最长连续: ${stats.maxConsecutive}场<br>
+                        比赛场次: ${stats.matches.join(', ')}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function displayBatchResults(results, players, options, duration) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `<h4>🔄 批量测试完成 (耗时: ${duration}ms)</h4>`;
+            html += `<p><strong>配置:</strong> ${players.length}人, 最大连续${options.maxConsecutiveMatches}场, 最大休息${options.maxConsecutiveRests}场</p>`;
+            html += `<p><strong>测试次数:</strong> ${results.length}次</p>`;
+            
+            let successCount = 0;
+            let totalConsecutiveIssues = 0;
+            let totalDuration = 0;
+            
+            results.forEach((matches, index) => {
+                if (matches && matches.length > 0) {
+                    successCount++;
+                    const playerStats = analyzePlayerStats(matches, players);
+                    const consecutiveIssues = playerStats.reduce((sum, stats) => sum + stats.consecutiveIssues, 0);
+                    totalConsecutiveIssues += consecutiveIssues;
+                }
+            });
+            
+            html += `<p><strong>成功率:</strong> ${successCount}/${results.length} (${(successCount/results.length*100).toFixed(1)}%)</p>`;
+            html += `<p><strong>平均连续问题:</strong> ${(totalConsecutiveIssues/successCount).toFixed(1)}个/次</p>`;
+            
+            if (successCount > 0) {
+                html += '<p class="success">✅ 算法表现良好，能够稳定生成满足条件的赛程</p>';
+            } else {
+                html += '<p class="error">❌ 算法需要调整，无法生成满足条件的赛程</p>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function analyzePlayerStats(matches, players) {
+            const playerStats = players.map(() => ({
+                matchCount: 0,
+                matches: [],
+                consecutiveIssues: 0,
+                maxConsecutive: 0
+            }));
+            
+            // 统计每个玩家的比赛情况
+            matches.forEach((match, matchIndex) => {
+                const playingPlayers = [...match.team1, ...match.team2];
+                playingPlayers.forEach(playerName => {
+                    const playerIndex = players.indexOf(playerName);
+                    if (playerIndex !== -1) {
+                        playerStats[playerIndex].matchCount++;
+                        playerStats[playerIndex].matches.push(matchIndex + 1);
+                    }
+                });
+            });
+            
+            // 分析连续比赛问题
+            playerStats.forEach((stats, playerIndex) => {
+                let currentConsecutive = 1;
+                let maxConsecutive = 1;
+                
+                for (let i = 1; i < stats.matches.length; i++) {
+                    if (stats.matches[i] === stats.matches[i-1] + 1) {
+                        currentConsecutive++;
+                        maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                    } else {
+                        if (currentConsecutive > 2) {
+                            stats.consecutiveIssues++;
+                        }
+                        currentConsecutive = 1;
+                    }
+                }
+                
+                if (currentConsecutive > 2) {
+                    stats.consecutiveIssues++;
+                }
+                
+                stats.maxConsecutive = maxConsecutive;
+            });
+            
+            return playerStats;
+        }
+        
+        // 页面加载完成后自动运行一次测试
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runTest, 500);
+        });
+    </script>
+</body>
+</html>
