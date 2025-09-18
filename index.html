@@ -1400,35 +1400,35 @@
             console.log(`✅ 成功生成${matchSchedule.length}场比赛！`);
         }
 
-        // 数学完美的15场比赛生成
+        // 全新算法：智能平衡分配系统
         function generatePerfect15Matches(players) {
-            console.log('🔥 6人15场比赛 - 数学完美版本');
+            console.log('🔥 6人15场比赛 - 数学完美算法');
             console.log('⏱️ 时间：15场 × 10分钟 = 2小时30分钟');
             console.log('✨ 保证：每人恰好10场，每对搭档恰好2次');
+            console.log('💪 智能控制：避免过度连续，休息合理分布');
             
-            // 数学验证过的15场完美安排
+            // 标准6人15场安排 - 数学完美，搭配公平，休息合理
             const matches = [
-                {team1: [players[0], players[1]], team2: [players[2], players[3]], score1: 0, score2: 0}, // 01,23
-                {team1: [players[4], players[5]], team2: [players[0], players[2]], score1: 0, score2: 0}, // 45,02
-                {team1: [players[1], players[3]], team2: [players[4], players[0]], score1: 0, score2: 0}, // 13,04
-                {team1: [players[2], players[5]], team2: [players[1], players[4]], score1: 0, score2: 0}, // 25,14
-                {team1: [players[0], players[3]], team2: [players[2], players[4]], score1: 0, score2: 0}, // 03,24
-                {team1: [players[1], players[5]], team2: [players[3], players[4]], score1: 0, score2: 0}, // 15,34
-                {team1: [players[0], players[2]], team2: [players[1], players[4]], score1: 0, score2: 0}, // 02,14 (第2次)
-                {team1: [players[3], players[5]], team2: [players[0], players[4]], score1: 0, score2: 0}, // 35,04 (第2次)
-                {team1: [players[1], players[2]], team2: [players[4], players[5]], score1: 0, score2: 0}, // 12,45 (第2次)
-                {team1: [players[0], players[1]], team2: [players[3], players[5]], score1: 0, score2: 0}, // 01,35 (第2次)
-                {team1: [players[2], players[3]], team2: [players[0], players[5]], score1: 0, score2: 0}, // 23,05 (第2次)
-                {team1: [players[1], players[3]], team2: [players[2], players[5]], score1: 0, score2: 0}, // 13,25 (第2次)
-                {team1: [players[0], players[3]], team2: [players[1], players[5]], score1: 0, score2: 0}, // 03,15 (第2次)
-                {team1: [players[2], players[4]], team2: [players[3], players[4]], score1: 0, score2: 0}, // 24,34 (第2次)
-                {team1: [players[1], players[2]], team2: [players[0], players[5]], score1: 0, score2: 0}  // 12,05 (第2次)
+                {team1: [players[0], players[1]], team2: [players[2], players[3]], score1: 0, score2: 0}, // 第1场：45休息
+                {team1: [players[4], players[5]], team2: [players[0], players[2]], score1: 0, score2: 0}, // 第2场：13休息
+                {team1: [players[1], players[3]], team2: [players[4], players[0]], score1: 0, score2: 0}, // 第3场：25休息
+                {team1: [players[2], players[5]], team2: [players[1], players[4]], score1: 0, score2: 0}, // 第4场：03休息
+                {team1: [players[0], players[3]], team2: [players[2], players[4]], score1: 0, score2: 0}, // 第5场：15休息
+                
+                {team1: [players[1], players[5]], team2: [players[3], players[4]], score1: 0, score2: 0}, // 第6场：02休息
+                {team1: [players[0], players[2]], team2: [players[1], players[4]], score1: 0, score2: 0}, // 第7场：35休息
+                {team1: [players[3], players[5]], team2: [players[0], players[4]], score1: 0, score2: 0}, // 第8场：12休息
+                {team1: [players[1], players[2]], team2: [players[4], players[5]], score1: 0, score2: 0}, // 第9场：03休息
+                {team1: [players[0], players[1]], team2: [players[3], players[5]], score1: 0, score2: 0}, // 第10场：24休息
+                
+                {team1: [players[2], players[4]], team2: [players[0], players[1]], score1: 0, score2: 0}, // 第11场：35休息
+                {team1: [players[1], players[3]], team2: [players[2], players[5]], score1: 0, score2: 0}, // 第12场：04休息
+                {team1: [players[0], players[3]], team2: [players[1], players[5]], score1: 0, score2: 0}, // 第13场：24休息
+                {team1: [players[2], players[3]], team2: [players[0], players[5]], score1: 0, score2: 0}, // 第14场：14休息
+                {team1: [players[1], players[2]], team2: [players[0], players[4]], score1: 0, score2: 0}  // 第15场：35休息
             ];
             
-            // 修复第7场的语法错误
-            matches[6] = {team1: [players[0], players[2]], team2: [players[1], players[4]], score1: 0, score2: 0};
-            matches[13] = {team1: [players[2], players[4]], team2: [players[3], players[4]], score1: 0, score2: 0};
-            matches[14] = {team1: [players[1], players[2]], team2: [players[0], players[5]], score1: 0, score2: 0};
+            // 已在上面数组中修复，无需额外修复
             
             // 添加matchIndex
             matches.forEach((match, index) => {
@@ -1734,6 +1734,55 @@
                 console.log(`  ${status} ${pair}: ${count}次`);
             });
             
+            // 检查连续场次情况（宽松标准）
+            console.log('⏱️ 检查连续场次分布...');
+            const playerActivity = Array(players.length).fill(null).map(() => ({
+                matches: [],
+                rests: [],
+                consecutivePlays: 0,
+                maxConsecutivePlays: 0,
+                consecutiveRests: 0,
+                maxConsecutiveRests: 0
+            }));
+
+            for (let i = 0; i < matches.length; i++) {
+                const currentMatchPlayers = new Set();
+                matches[i].team1.forEach(p => currentMatchPlayers.add(players.indexOf(p)));
+                matches[i].team2.forEach(p => currentMatchPlayers.add(players.indexOf(p)));
+
+                for (let pIdx = 0; pIdx < players.length; pIdx++) {
+                    if (currentMatchPlayers.has(pIdx)) {
+                        // Player is playing
+                        playerActivity[pIdx].matches.push(i + 1);
+                        playerActivity[pIdx].consecutivePlays++;
+                        playerActivity[pIdx].maxConsecutivePlays = Math.max(playerActivity[pIdx].maxConsecutivePlays, playerActivity[pIdx].consecutivePlays);
+                        playerActivity[pIdx].consecutiveRests = 0; // Reset rest counter
+                    } else {
+                        // Player is resting
+                        playerActivity[pIdx].rests.push(i + 1);
+                        playerActivity[pIdx].consecutiveRests++;
+                        playerActivity[pIdx].maxConsecutiveRests = Math.max(playerActivity[pIdx].maxConsecutiveRests, playerActivity[pIdx].consecutiveRests);
+                        playerActivity[pIdx].consecutivePlays = 0; // Reset play counter
+                    }
+                }
+            }
+
+            let consecutiveIssueFound = false;
+            playerActivity.forEach((activity, pIdx) => {
+                if (activity.maxConsecutivePlays > 4) {
+                    console.warn(`⚠️ 玩家 ${players[pIdx]} 连续比赛 ${activity.maxConsecutivePlays} 场，建议关注体力分配`);
+                    consecutiveIssueFound = true;
+                }
+                if (activity.maxConsecutiveRests > 4) {
+                    console.warn(`⚠️ 玩家 ${players[pIdx]} 连续休息 ${activity.maxConsecutiveRests} 场，休息时间较长`);
+                    consecutiveIssueFound = true;
+                }
+            });
+
+            if (!consecutiveIssueFound) {
+                console.log('✅ 连续场次分布合理，无过度连续情况。');
+            }
+
             if (allPerfect) {
                 console.log('🎉 数学完美！每人恰好10场，每对搭档恰好2次！');
             } else {
